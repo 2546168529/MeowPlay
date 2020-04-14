@@ -4,6 +4,12 @@
 using std::string;
 using std::stringstream;
 
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 在查询失败后，默认返回的内容
+** @return 查询结果 */
 int32_t mpdb::read_user_attribute_int32(int64_t _user, string _properties, int32_t _default)
 {
 	mpdb::lock.lock();
@@ -39,6 +45,12 @@ int32_t mpdb::read_user_attribute_int32(int64_t _user, string _properties, int32
 	return result;
 }
 
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 在查询失败后，默认返回的内容
+** @return 查询结果 */
 int64_t mpdb::read_user_attribute_int64(int64_t _user, string _properties, int64_t _default)
 {
 	mpdb::lock.lock();
@@ -74,6 +86,12 @@ int64_t mpdb::read_user_attribute_int64(int64_t _user, string _properties, int64
 	return result;
 }
 
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 在查询失败后，默认返回的内容
+** @return 查询结果 */
 string mpdb::read_user_attribute_text(int64_t _user, string _properties, const char* _default)
 {
 	mpdb::lock.lock();

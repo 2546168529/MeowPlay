@@ -1,15 +1,26 @@
 #include "basic.h"
 #include <sstream>
 
+/* 
+** 用于数据库读写的锁
+** 主要用途：
+** 绝对避免在事务处理时进行其它读写操作
+** 绝对避免同时发生写入操作 */
 std::mutex mpdb::lock;
+
+/*
+** SQLITE数据库连接句柄
+** 保证玩家数据库(db_player_data)已附加 */
 sqlite3* mpdb::connect = nullptr;
 
 using std::string;
 using std::stringstream;
 
 /*
- 初始化数据库
- */
+** 初始化数据库
+** @param _game_db 游戏数据库路径，用于保存游戏数据
+** @param _user_db 玩家数据库路径，仅用于存储玩家数据
+** @return 若为true，保证游戏数据库已打开，且玩家数据库(db_player_data)已附加 */
 bool mpdb::init_database(string _game_db, string _user_db)
 {
 
@@ -39,9 +50,10 @@ bool mpdb::init_database(string _game_db, string _user_db)
 
 	return false;
 }
+
 /*
- 初始化数据库结构
- */
+** 初始化数据库结构
+** @return 若为true，保证游戏数据库与玩家数据库结构完整 */
 bool mpdb::init_database_struct()
 {
 	stringstream sql;

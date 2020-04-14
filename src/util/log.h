@@ -33,7 +33,7 @@ namespace mp {
         log& operator<<(std::string _msg);
         log& operator<<(long long _msg);
         log& operator<<(unsigned long long _msg);
-        log& operator<<(SOP _msg);
+        log& operator<<(SOP _op);
     };
     
 }

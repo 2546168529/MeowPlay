@@ -2,37 +2,38 @@
 #include <sstream>
 #include <string>
 
-namespace mplog {
+namespace mp {
+    
+    class log {
+        public:
+        enum Type {
+            info, wran, error
+        };
 
-    enum Op {
-        push
-    };
+        enum SOP {
+            push
+        };
 
-    enum Type {
-        INFO, WRAN, ERROR
-    };
-
-    class message {
         private:
         std::stringstream m_msg;
         std::string m_from;
         std::string m_title;
-        mplog::Type m_type;
+        log::Type m_type;
 
         public:
-        message(const char* _from, const char* _title) 
-            : m_from(_from), m_title(_title), m_type(mplog::INFO), m_msg() {};
+        log(const char* _from, const char* _title) 
+            : m_from(_from), m_title(_title), m_type(info), m_msg() {};
 
-        message(Type _type, const char* _from, const char* _title) 
+        log(Type _type, const char* _from, const char* _title) 
             : m_from(_from), m_title(_title), m_type(_type), m_msg() {};
 
-        void push();
+        void _push();
 
-        message& operator<<(const char* _msg);
-        message& operator<<(std::string _msg);
-        message& operator<<(long long _msg);
-        message& operator<<(unsigned long long _msg);
-        message& operator<<(Op _msg);
+        log& operator<<(const char* _msg);
+        log& operator<<(std::string _msg);
+        log& operator<<(long long _msg);
+        log& operator<<(unsigned long long _msg);
+        log& operator<<(SOP _msg);
     };
     
 }

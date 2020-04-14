@@ -10,16 +10,16 @@ using std::stringstream;
 ** @param _properties 将要读取的玩家属性名称
 ** @param _default 在查询失败后，默认返回的内容
 ** @return 查询结果 */
-int32_t mpdb::read_user_attribute_int32(int64_t _user, string _properties, int32_t _default)
+int32_t mp::read_user_attribute_int32(int64_t _user, string _properties, int32_t _default)
 {
-	mpdb::lock.lock();
+	mp::lock_db.lock();
 	int32_t result = _default;
 
 	int rc = 0;
 
 	sqlite3_stmt *stmt = nullptr;
 	
-	rc = sqlite3_prepare_v2(mpdb::connect, "SELECT attribute_value FROM db_player_data.basic_attribute WHERE user_id=@user_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
+	rc = sqlite3_prepare_v2(mp::connect, "SELECT attribute_value FROM db_player_data.basic_attribute WHERE user_id=@user_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
 	
 	if(rc == SQLITE_OK) 
 	{
@@ -41,7 +41,7 @@ int32_t mpdb::read_user_attribute_int32(int64_t _user, string _properties, int32
 	}
 	
 	sqlite3_finalize(stmt);
-	mpdb::lock.unlock();
+	mp::lock_db.unlock();
 	return result;
 }
 
@@ -51,16 +51,16 @@ int32_t mpdb::read_user_attribute_int32(int64_t _user, string _properties, int32
 ** @param _properties 将要读取的玩家属性名称
 ** @param _default 在查询失败后，默认返回的内容
 ** @return 查询结果 */
-int64_t mpdb::read_user_attribute_int64(int64_t _user, string _properties, int64_t _default)
+int64_t mp::read_user_attribute_int64(int64_t _user, string _properties, int64_t _default)
 {
-	mpdb::lock.lock();
+	mp::lock_db.lock();
 	int64_t result = _default;
 
 	int rc = 0;
 
 	sqlite3_stmt *stmt = nullptr;
 	
-	rc = sqlite3_prepare_v2(mpdb::connect, "SELECT attribute_value FROM db_player_data.basic_attribute WHERE user_id=@user_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
+	rc = sqlite3_prepare_v2(mp::connect, "SELECT attribute_value FROM db_player_data.basic_attribute WHERE user_id=@user_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
 	
 	if(rc == SQLITE_OK) 
 	{
@@ -82,7 +82,7 @@ int64_t mpdb::read_user_attribute_int64(int64_t _user, string _properties, int64
 	}
 	
 	sqlite3_finalize(stmt);
-	mpdb::lock.unlock();
+	mp::lock_db.unlock();
 	return result;
 }
 
@@ -92,9 +92,9 @@ int64_t mpdb::read_user_attribute_int64(int64_t _user, string _properties, int64
 ** @param _properties 将要读取的玩家属性名称
 ** @param _default 在查询失败后，默认返回的内容
 ** @return 查询结果 */
-string mpdb::read_user_attribute_text(int64_t _user, string _properties, const char* _default)
+string mp::read_user_attribute_text(int64_t _user, string _properties, const char* _default)
 {
-	mpdb::lock.lock();
+	mp::lock_db.lock();
 	string result;
 	if (_default != nullptr)
 	{
@@ -105,7 +105,7 @@ string mpdb::read_user_attribute_text(int64_t _user, string _properties, const c
 
 	sqlite3_stmt *stmt = nullptr;
 	
-	rc = sqlite3_prepare_v2(mpdb::connect, "SELECT attribute_value FROM db_player_data.basic_attribute WHERE user_id=@user_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
+	rc = sqlite3_prepare_v2(mp::connect, "SELECT attribute_value FROM db_player_data.basic_attribute WHERE user_id=@user_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
 	
 	if(rc == SQLITE_OK) 
 	{
@@ -127,7 +127,7 @@ string mpdb::read_user_attribute_text(int64_t _user, string _properties, const c
 	}
 	
 	sqlite3_finalize(stmt);
-	mpdb::lock.unlock();
+	mp::lock_db.unlock();
 
 	//return std::move(result);
 	return result;

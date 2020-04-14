@@ -3,10 +3,10 @@
 
 int main()
 {
-    mpdb::init_database("data/game.db", "data/user.db");
-	mpdb::init_database_struct();
+    mp::init_database("data/game.db", "data/user.db");
+	mp::init_database_struct();
     
-    mplog::message("shell", "debug") << mpdb::read_user_attribute_text(1, "name", "null") << mplog::push;
+    mp::log("shell", "debug") << mp::read_user_attribute_text(1, "name", "null") << mp::log::push;
     
     system("pause");
     return 0;

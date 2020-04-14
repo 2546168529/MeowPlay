@@ -2,36 +2,36 @@
 
 #include <iostream>
 
-mplog::message& mplog::message::operator<<(const char* _msg)
+mp::log& mp::log::operator<<(const char* _msg)
 {
     m_msg << _msg;
     return *this;
 }
 
-mplog::message& mplog::message::operator<<(std::string _msg)
+mp::log& mp::log::operator<<(std::string _msg)
 {
     m_msg << _msg;
     return *this;
 }
 
-mplog::message& mplog::message::operator<<(long long _msg)
+mp::log& mp::log::operator<<(long long _msg)
 {
     m_msg << _msg;
     return *this;
 }
 
-mplog::message& mplog::message::operator<<(unsigned long long _msg)
+mp::log& mp::log::operator<<(unsigned long long _msg)
 {
     m_msg << _msg;
     return *this;
 }
 
-mplog::message& mplog::message::operator<<(Op _msg)
+mp::log& mp::log::operator<<(SOP _msg)
 {
     switch (_msg)
     {
-    case Op::push:
-        push();
+    case SOP::push:
+        _push();
         break;
     
     default:
@@ -41,7 +41,7 @@ mplog::message& mplog::message::operator<<(Op _msg)
     return *this;
 }
 
-void mplog::message::push()
+void mp::log::_push()
 {
 
     std::cout << m_msg.str() << std::endl;

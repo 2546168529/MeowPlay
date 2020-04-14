@@ -1,0 +1,29 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "make_shell",
+            "command": "C:\\mingw64\\bin\\mingw32-make.exe",
+            "args": [
+                "-C",                   //跳转到指定目录去读取目标目录下的Makefile文件
+                "${fileDirname}"        //要跳转的目标目录
+            ],
+            "group": { 
+                "kind": "build",    //任务分组名,可以通过在Command Palette(F1) 输入run build task来运行
+                "isDefault": true   
+            },
+            "problemMatcher": [
+                "$gcc", // 使用gcc捕获错误
+            ],            
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        }
+    ],
+    "version": "2.0.0"
+}

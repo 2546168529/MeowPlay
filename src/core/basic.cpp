@@ -24,7 +24,12 @@ using std::stringstream;
 bool mpdb::init_database(string _game_db, string _user_db)
 {
 
-	if (_user_db.find('\'') != string::npos) return false;
+	if (_user_db.find('\'') != string::npos)
+	{
+		/* 数据库路径里不能携带'符号，此处应该输出日志 */
+		mplog::message(mplog::ERROR, "core-basic", "init_database") << "数据库路径里不能携带'符号" << mplog::push;
+		return false;
+	}
 
 	int rc;
 	rc = sqlite3_open_v2(_game_db.c_str(), &connect, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
@@ -68,6 +73,7 @@ bool mpdb::init_database_struct()
 	if (rc != SQLITE_OK)
 	{
 		//此处应输出错误信息
+		mplog::message(mplog::ERROR, "core-basic", "init_database") << "初始化数据库结构失败:" << sqlite3_errmsg(mpdb::connect) << mplog::push;
 	}
 
 	sqlite3_free(error);

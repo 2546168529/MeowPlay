@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <string>
 
+#include "../util/log.h"
 #include "../sqlite/sqlite3.h"
 
 namespace mpdb {

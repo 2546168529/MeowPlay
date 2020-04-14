@@ -95,7 +95,11 @@ int64_t mpdb::read_user_attribute_int64(int64_t _user, string _properties, int64
 string mpdb::read_user_attribute_text(int64_t _user, string _properties, const char* _default)
 {
 	mpdb::lock.lock();
-	string result(_default);
+	string result;
+	if (_default != nullptr)
+	{
+		result = _default;
+	}
 
 	int rc = 0;
 

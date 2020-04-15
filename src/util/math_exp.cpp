@@ -53,6 +53,7 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 	{
 		if(_rpn_exp[p] == ' ')
 		{
+			//遇到空格，且数字缓冲区内有数据则数字一读取完成，转换后直接加入
 			if(buf_pos != 0)
 			{
 				rpn.push(atof(number_buf));
@@ -62,13 +63,14 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 		}
 		else if(_rpn_exp[p] == '.' || (_rpn_exp[p] >= '0' && _rpn_exp[p] <= '9'))
 		{
+			//判断如果加入到缓冲区是否超出范围
 			if(buf_pos+1 >= N_BUF_MAXSIZE) return 0;
 			number_buf[buf_pos++] = _rpn_exp[p];
 			number_buf[buf_pos] = '\0';
 		}
 		else
-		
 		{
+			//e是stack第一次弹出的值，s是stack第二次弹出的值
 			double s, e;
 			switch(_rpn_exp[p])
 			{
@@ -105,6 +107,7 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 		}
 	}
 	
+	//如果计算完毕后stack剩余的成员数不为1则失败
 	if(rpn.size() != 1) return 0;
 	
 	return rpn.top();
@@ -139,9 +142,8 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 			first = false;
 		}
 		
-		
+		//用于标识是否追加过数字，若追加过数字，则需要在完成后在末尾插入空格
 		bool flag = false;
-		
 		while((_math_exp[p] >= '0' && _math_exp[p] <= '9') || _math_exp[p] == '.' || _math_exp[p] == ' ' )
 		{
 			if(_math_exp[p] != ' ')
@@ -156,6 +158,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 		if(flag) result.append(1, ' ');
 		if(p >= _exp_len) break;
 		
+		//临时变量，用于记录顶栈数据
 		char top_ch;
 		
 		if(_math_exp[p] == ')')
@@ -181,6 +184,8 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 				while(!rpn_op.empty())
 				{
 					top_ch = rpn_op.top();
+					//除非找到优先级比加减法小的，否则全部出栈
+					//左括号无优先级
 					if(top_ch == '(') break;
 					
 					result.append(1, top_ch);
@@ -194,6 +199,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 		}
 		else if(_math_exp[p] == '(')
 		{
+			//右括号，无条件直接加入
 			rpn_op.push(_math_exp[p]);
 		}
 		else if(_math_exp[p] == '*' || _math_exp[p] == '/' || _math_exp[p] == '%' || _math_exp[p] == '^')
@@ -201,6 +207,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 			while(!rpn_op.empty())
 			{
 				top_ch = rpn_op.top();
+				//除非找到优先级比即将加入的操作符小的，否则全部出栈
 				if(top_ch == '(' || top_ch == '+' || top_ch == '-') break;
 				
 				result.append(1, top_ch);

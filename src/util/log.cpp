@@ -6,10 +6,7 @@
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(char _msg)
 {
-    char buf[] = {0, '\0'};
-    buf[0] = _msg;
-    
-    m_msg.append(buf);
+    m_msg.append(1, _msg);
     return *this;
 }
 

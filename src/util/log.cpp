@@ -41,6 +41,15 @@ mp::log& mp::log::operator<<(int64_t _msg)
 }
 
 /*
+** 填入日志内容，但不立即输出
+** @param _msg 将要填入的内容 */
+mp::log& mp::log::operator<<(double _msg)
+{
+    m_msg.append(std::to_string(_msg));
+    return *this;
+}
+
+/*
 ** 日志操作
 ** @param _op 操作类型
 ** 若_op为push，则表示立即输出日志 */
@@ -52,6 +61,10 @@ mp::log& mp::log::operator<<(SOP _op)
         _push();
         break;
     
+    case SOP::clear:
+        _clear();
+        break;
+
     default:
         break;
     }
@@ -84,5 +97,13 @@ void mp::log::_push()
 
     std::cout << "["  << m_from << "] [" << m_title << "] ";
     std::cout << m_msg << std::endl;
-    m_msg.clear();
+    _clear();
+    
+}
+
+/*
+** 清空消息缓冲区消息内容 */
+void mp::log::_clear()
+{
+    m_msg.resize(0);
 }

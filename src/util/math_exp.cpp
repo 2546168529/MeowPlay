@@ -3,23 +3,7 @@
 #include <stdlib.h>
 #include <string>
 #include <string.h>
-
-template<typename T>
-inline T pow(T x, unsigned n)
-{
-	if(n == 0) return 1;
-	
-	T result = x;
-	unsigned ex = 1;
-	
-	while( (ex << 1) <= n )
-	{
-		result = result * result;
-		ex <<= 1;
-	}
-	
-	return result * pow(x, n - ex);
-}
+#include <math.h>
 
 /*
 ** 辅助函数，用于取两个栈顶元素

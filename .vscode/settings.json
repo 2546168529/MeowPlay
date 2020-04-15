@@ -44,5 +44,7 @@
         "xutility": "cpp",
         "*.rh": "cpp",
         "stack": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": true,
+
 }

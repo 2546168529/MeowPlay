@@ -2,8 +2,8 @@
 #include <iostream>
 
 /*
-** å¡«å…¥æ—¥å¿—å†…å®¹ï¼Œä½†ä¸ç«‹å³è¾“å‡º
-** @param _msg å°†è¦å¡«å…¥çš„å†…å®¹ */
+** ÌîÈëÈÕÖ¾ÄÚÈÝ£¬µ«²»Á¢¼´Êä³ö
+** @param _msg ½«ÒªÌîÈëµÄÄÚÈÝ */
 mp::log& mp::log::operator<<(char _msg)
 {
     m_msg.append(1, _msg);
@@ -11,8 +11,8 @@ mp::log& mp::log::operator<<(char _msg)
 }
 
 /*
-** å¡«å…¥æ—¥å¿—å†…å®¹ï¼Œä½†ä¸ç«‹å³è¾“å‡º
-** @param _msg å°†è¦å¡«å…¥çš„å†…å®¹ */
+** ÌîÈëÈÕÖ¾ÄÚÈÝ£¬µ«²»Á¢¼´Êä³ö
+** @param _msg ½«ÒªÌîÈëµÄÄÚÈÝ */
 mp::log& mp::log::operator<<(const char* _msg)
 {
     m_msg.append(_msg);
@@ -20,8 +20,8 @@ mp::log& mp::log::operator<<(const char* _msg)
 }
 
 /*
-** å¡«å…¥æ—¥å¿—å†…å®¹ï¼Œä½†ä¸ç«‹å³è¾“å‡º
-** @param _msg å°†è¦å¡«å…¥çš„å†…å®¹ */
+** ÌîÈëÈÕÖ¾ÄÚÈÝ£¬µ«²»Á¢¼´Êä³ö
+** @param _msg ½«ÒªÌîÈëµÄÄÚÈÝ */
 mp::log& mp::log::operator<<(std::string _msg)
 {
     m_msg.append(_msg);
@@ -29,8 +29,8 @@ mp::log& mp::log::operator<<(std::string _msg)
 }
 
 /*
-** å¡«å…¥æ—¥å¿—å†…å®¹ï¼Œä½†ä¸ç«‹å³è¾“å‡º
-** @param _msg å°†è¦å¡«å…¥çš„å†…å®¹ */
+** ÌîÈëÈÕÖ¾ÄÚÈÝ£¬µ«²»Á¢¼´Êä³ö
+** @param _msg ½«ÒªÌîÈëµÄÄÚÈÝ */
 mp::log& mp::log::operator<<(int64_t _msg)
 {
     m_msg.append(std::to_string(_msg));
@@ -38,8 +38,8 @@ mp::log& mp::log::operator<<(int64_t _msg)
 }
 
 /*
-** å¡«å…¥æ—¥å¿—å†…å®¹ï¼Œä½†ä¸ç«‹å³è¾“å‡º
-** @param _msg å°†è¦å¡«å…¥çš„å†…å®¹ */
+** ÌîÈëÈÕÖ¾ÄÚÈÝ£¬µ«²»Á¢¼´Êä³ö
+** @param _msg ½«ÒªÌîÈëµÄÄÚÈÝ */
 mp::log& mp::log::operator<<(double _msg)
 {
     m_msg.append(std::to_string(_msg));
@@ -47,9 +47,9 @@ mp::log& mp::log::operator<<(double _msg)
 }
 
 /*
-** æ—¥å¿—æ“ä½œ
-** @param _op æ“ä½œç±»åž‹
-** è‹¥_opä¸ºpushï¼Œåˆ™è¡¨ç¤ºç«‹å³è¾“å‡ºæ—¥å¿— */
+** ÈÕÖ¾²Ù×÷
+** @param _op ²Ù×÷ÀàÐÍ
+** Èô_opÎªpush£¬Ôò±íÊ¾Á¢¼´Êä³öÈÕÖ¾ */
 mp::log& mp::log::operator<<(SOP _op)
 {
     switch (_op)
@@ -70,8 +70,8 @@ mp::log& mp::log::operator<<(SOP _op)
 }
 
 /*
-** è¾“å‡ºæ—¥å¿—
-** åœ¨ä¿¡æ¯å¡«å…¥å®Œæ¯•åŽè°ƒç”¨æ­¤å‡½æ•°è¾“å‡ºå¡«å…¥çš„å†…å®¹ */
+** Êä³öÈÕÖ¾
+** ÔÚÐÅÏ¢ÌîÈëÍê±Ïºóµ÷ÓÃ´Ëº¯ÊýÊä³öÌîÈëµÄÄÚÈÝ */
 void mp::log::_push()
 {
     switch (m_type)
@@ -99,7 +99,7 @@ void mp::log::_push()
 }
 
 /*
-** æ¸…ç©ºæ¶ˆæ¯ç¼“å†²åŒºæ¶ˆæ¯å†…å®¹ */
+** Çå¿ÕÏûÏ¢»º³åÇøÏûÏ¢ÄÚÈÝ */
 void mp::log::_clear()
 {
     m_msg.resize(0);

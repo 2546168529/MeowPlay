@@ -6,8 +6,8 @@
 #include <math.h>
 
 /*
-** è¾…åŠ©å‡½æ•°ï¼Œç”¨äºå–ä¸¤ä¸ªæ ˆé¡¶å…ƒç´ 
-** @return è‹¥stacké‡Œçš„å…ƒç´ ä¸è¶³ä¸¤ä¸ªï¼Œåˆ™è¿”å›falseè¡¨ç¤ºè·å–å¤±è´¥*/
+** ¸¨Öúº¯Êı£¬ÓÃÓÚÈ¡Á½¸öÕ»¶¥ÔªËØ
+** @return ÈôstackÀïµÄÔªËØ²»×ãÁ½¸ö£¬Ôò·µ»Øfalse±íÊ¾»ñÈ¡Ê§°Ü*/
 template<typename T>
 inline bool rpn_top2(std::stack<T>& rpn, T& e, T& s)
 {
@@ -20,10 +20,10 @@ inline bool rpn_top2(std::stack<T>& rpn, T& e, T& s)
 }
 
 /*
-** è®¡ç®—é€†æ³¢å…°è¡¨è¾¾å¼
-** @param _rpn_exp é€†æ³¢å…°è¡¨è¾¾å¼ä¸²
-** @param _exp_len é€†æ³¢å…°è¡¨è¾¾å¼ä¸²çš„é•¿åº¦
-** @return è¿”å›æœ€ç»ˆè®¡ç®—ç»“æœ */
+** ¼ÆËãÄæ²¨À¼±í´ïÊ½
+** @param _rpn_exp Äæ²¨À¼±í´ïÊ½´®
+** @param _exp_len Äæ²¨À¼±í´ïÊ½´®µÄ³¤¶È
+** @return ·µ»Ø×îÖÕ¼ÆËã½á¹û */
 double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 {
 	constexpr size_t N_BUF_MAXSIZE = 32;
@@ -37,7 +37,7 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 	{
 		if(_rpn_exp[p] == ' ')
 		{
-			//é‡åˆ°ç©ºæ ¼ï¼Œä¸”æ•°å­—ç¼“å†²åŒºå†…æœ‰æ•°æ®åˆ™æ•°å­—ä¸€è¯»å–å®Œæˆï¼Œè½¬æ¢åç›´æ¥åŠ å…¥
+			//Óöµ½¿Õ¸ñ£¬ÇÒÊı×Ö»º³åÇøÄÚÓĞÊı¾İÔòÊı×ÖÒ»¶ÁÈ¡Íê³É£¬×ª»»ºóÖ±½Ó¼ÓÈë
 			if(buf_pos != 0)
 			{
 				rpn.push(atof(number_buf));
@@ -47,14 +47,14 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 		}
 		else if(_rpn_exp[p] == '.' || (_rpn_exp[p] >= '0' && _rpn_exp[p] <= '9'))
 		{
-			//åˆ¤æ–­å¦‚æœåŠ å…¥åˆ°ç¼“å†²åŒºæ˜¯å¦è¶…å‡ºèŒƒå›´
+			//ÅĞ¶ÏÈç¹û¼ÓÈëµ½»º³åÇøÊÇ·ñ³¬³ö·¶Î§
 			if(buf_pos+1 >= N_BUF_MAXSIZE) return 0;
 			number_buf[buf_pos++] = _rpn_exp[p];
 			number_buf[buf_pos] = '\0';
 		}
 		else
 		{
-			//eæ˜¯stackç¬¬ä¸€æ¬¡å¼¹å‡ºçš„å€¼ï¼Œsæ˜¯stackç¬¬äºŒæ¬¡å¼¹å‡ºçš„å€¼
+			//eÊÇstackµÚÒ»´Îµ¯³öµÄÖµ£¬sÊÇstackµÚ¶ş´Îµ¯³öµÄÖµ
 			double s, e;
 			switch(_rpn_exp[p])
 			{
@@ -91,17 +91,17 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 		}
 	}
 	
-	//å¦‚æœè®¡ç®—å®Œæ¯•åstackå‰©ä½™çš„æˆå‘˜æ•°ä¸ä¸º1åˆ™å¤±è´¥
+	//Èç¹û¼ÆËãÍê±ÏºóstackÊ£ÓàµÄ³ÉÔ±Êı²»Îª1ÔòÊ§°Ü
 	if(rpn.size() != 1) return 0;
 	
 	return rpn.top();
 }
 
 /*
-** å°†ä¸€ä¸ªæ•°å­¦å…¬å¼æ„é€ ä¸ºé€†æ³¢å…°è¡¨è¾¾å¼
-** @param _math_exp è¡¨è¾¾å¼ä¸²
-** @param _exp_len è¡¨è¾¾å¼ä¸²çš„é•¿åº¦
-** @return è¿”å›é€†æ³¢å…°è¡¨è¾¾å¼ */
+** ½«Ò»¸öÊıÑ§¹«Ê½¹¹ÔìÎªÄæ²¨À¼±í´ïÊ½
+** @param _math_exp ±í´ïÊ½´®
+** @param _exp_len ±í´ïÊ½´®µÄ³¤¶È
+** @return ·µ»ØÄæ²¨À¼±í´ïÊ½ */
 std::string make_rpn(const char* _math_exp, size_t _exp_len)
 {
 	bool first = true;
@@ -113,10 +113,10 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 	{
 		if(_math_exp[p] == ' ') continue;
 		
-		//å¼€å¤´ç¬¬ä¸€ä¸ªæœ‰æ•ˆç¬¦å·
+		//¿ªÍ·µÚÒ»¸öÓĞĞ§·ûºÅ
 		if(first)
 		{
-			//å¦‚æœå¼€å¤´ç¬¬ä¸€ä¸ªæœ‰æ•ˆç¬¦å·æ˜¯+æˆ–è€…-ï¼Œåˆ™åœ¨å¼€å¤´è¡¥ä¸€ä¸ª0 
+			//Èç¹û¿ªÍ·µÚÒ»¸öÓĞĞ§·ûºÅÊÇ+»òÕß-£¬ÔòÔÚ¿ªÍ·²¹Ò»¸ö0 
 			if(_math_exp[p] == '-' || _math_exp[p] == '+')
 			{
 				result.append(1, '0');
@@ -126,7 +126,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 			first = false;
 		}
 		
-		//ç”¨äºæ ‡è¯†æ˜¯å¦è¿½åŠ è¿‡æ•°å­—ï¼Œè‹¥è¿½åŠ è¿‡æ•°å­—ï¼Œåˆ™éœ€è¦åœ¨å®Œæˆååœ¨æœ«å°¾æ’å…¥ç©ºæ ¼
+		//ÓÃÓÚ±êÊ¶ÊÇ·ñ×·¼Ó¹ıÊı×Ö£¬Èô×·¼Ó¹ıÊı×Ö£¬ÔòĞèÒªÔÚÍê³ÉºóÔÚÄ©Î²²åÈë¿Õ¸ñ
 		bool flag = false;
 		while((_math_exp[p] >= '0' && _math_exp[p] <= '9') || _math_exp[p] == '.' || _math_exp[p] == ' ' )
 		{
@@ -142,7 +142,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 		if(flag) result.append(1, ' ');
 		if(p >= _exp_len) break;
 		
-		//ä¸´æ—¶å˜é‡ï¼Œç”¨äºè®°å½•é¡¶æ ˆæ•°æ®
+		//ÁÙÊ±±äÁ¿£¬ÓÃÓÚ¼ÇÂ¼¶¥Õ»Êı¾İ
 		char top_ch;
 		
 		if(_math_exp[p] == ')')
@@ -158,7 +158,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 		}
 		else if(_math_exp[p] == '+' || _math_exp[p] == '-')
 		{
-			//Stackä¸ºç©ºï¼Œç›´æ¥push 
+			//StackÎª¿Õ£¬Ö±½Ópush 
 			if(rpn_op.empty())
 			{
 				rpn_op.push(_math_exp[p]);
@@ -168,8 +168,8 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 				while(!rpn_op.empty())
 				{
 					top_ch = rpn_op.top();
-					//é™¤éæ‰¾åˆ°ä¼˜å…ˆçº§æ¯”åŠ å‡æ³•å°çš„ï¼Œå¦åˆ™å…¨éƒ¨å‡ºæ ˆ
-					//å·¦æ‹¬å·æ— ä¼˜å…ˆçº§
+					//³ı·ÇÕÒµ½ÓÅÏÈ¼¶±È¼Ó¼õ·¨Ğ¡µÄ£¬·ñÔòÈ«²¿³öÕ»
+					//×óÀ¨ºÅÎŞÓÅÏÈ¼¶
 					if(top_ch == '(') break;
 					
 					result.append(1, top_ch);
@@ -183,7 +183,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 		}
 		else if(_math_exp[p] == '(')
 		{
-			//å³æ‹¬å·ï¼Œæ— æ¡ä»¶ç›´æ¥åŠ å…¥
+			//ÓÒÀ¨ºÅ£¬ÎŞÌõ¼şÖ±½Ó¼ÓÈë
 			rpn_op.push(_math_exp[p]);
 		}
 		else if(_math_exp[p] == '*' || _math_exp[p] == '/' || _math_exp[p] == '%' || _math_exp[p] == '^')
@@ -191,7 +191,7 @@ std::string make_rpn(const char* _math_exp, size_t _exp_len)
 			while(!rpn_op.empty())
 			{
 				top_ch = rpn_op.top();
-				//é™¤éæ‰¾åˆ°ä¼˜å…ˆçº§æ¯”å³å°†åŠ å…¥çš„æ“ä½œç¬¦å°çš„ï¼Œå¦åˆ™å…¨éƒ¨å‡ºæ ˆ
+				//³ı·ÇÕÒµ½ÓÅÏÈ¼¶±È¼´½«¼ÓÈëµÄ²Ù×÷·ûĞ¡µÄ£¬·ñÔòÈ«²¿³öÕ»
 				if(top_ch == '(' || top_ch == '+' || top_ch == '-') break;
 				
 				result.append(1, top_ch);

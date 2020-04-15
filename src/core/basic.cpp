@@ -2,32 +2,32 @@
 #include <sstream>
 
 /* 
-** ç”¨äºæ•°æ®åº“è¯»å†™çš„é”
-** ä¸»è¦ç”¨é€”ï¼š
-** ç»å¯¹é¿å…åœ¨äº‹åŠ¡å¤„ç†æ—¶è¿›è¡Œå…¶å®ƒè¯»å†™æ“ä½œ
-** ç»å¯¹é¿å…åŒæ—¶å‘ç”Ÿå†™å…¥æ“ä½œ */
+** ÓÃÓÚÊı¾İ¿â¶ÁĞ´µÄËø
+** Ö÷ÒªÓÃÍ¾£º
+** ¾ø¶Ô±ÜÃâÔÚÊÂÎñ´¦ÀíÊ±½øĞĞÆäËü¶ÁĞ´²Ù×÷
+** ¾ø¶Ô±ÜÃâÍ¬Ê±·¢ÉúĞ´Èë²Ù×÷ */
 std::mutex mp::lock_db;
 
 /*
-** SQLITEæ•°æ®åº“è¿æ¥å¥æŸ„
-** ä¿è¯ç©å®¶æ•°æ®åº“(db_player_data)å·²é™„åŠ  */
+** SQLITEÊı¾İ¿âÁ¬½Ó¾ä±ú
+** ±£Ö¤Íæ¼ÒÊı¾İ¿â(db_player_data)ÒÑ¸½¼Ó */
 sqlite3* mp::connect = nullptr;
 
 using std::string;
 using std::stringstream;
 
 /*
-** åˆå§‹åŒ–æ•°æ®åº“
-** @param _game_db æ¸¸æˆæ•°æ®åº“è·¯å¾„ï¼Œç”¨äºä¿å­˜æ¸¸æˆæ•°æ®
-** @param _user_db ç©å®¶æ•°æ®åº“è·¯å¾„ï¼Œä»…ç”¨äºå­˜å‚¨ç©å®¶æ•°æ®
-** @return è‹¥ä¸ºtrueï¼Œä¿è¯æ¸¸æˆæ•°æ®åº“å·²æ‰“å¼€ï¼Œä¸”ç©å®¶æ•°æ®åº“(db_player_data)å·²é™„åŠ  */
+** ³õÊ¼»¯Êı¾İ¿â
+** @param _game_db ÓÎÏ·Êı¾İ¿âÂ·¾¶£¬ÓÃÓÚ±£´æÓÎÏ·Êı¾İ
+** @param _user_db Íæ¼ÒÊı¾İ¿âÂ·¾¶£¬½öÓÃÓÚ´æ´¢Íæ¼ÒÊı¾İ
+** @return ÈôÎªtrue£¬±£Ö¤ÓÎÏ·Êı¾İ¿âÒÑ´ò¿ª£¬ÇÒÍæ¼ÒÊı¾İ¿â(db_player_data)ÒÑ¸½¼Ó */
 bool mp::init_database(string _game_db, string _user_db)
 {
 
 	if (_user_db.find('\'') != string::npos)
 	{
-		/* æ•°æ®åº“è·¯å¾„é‡Œä¸èƒ½æºå¸¦'ç¬¦å·ï¼Œæ­¤å¤„åº”è¯¥è¾“å‡ºæ—¥å¿— */
-		log(log::error, "core-basic", "init_database") << "æ•°æ®åº“è·¯å¾„é‡Œä¸èƒ½æºå¸¦'ç¬¦å·" << log::push;
+		/* Êı¾İ¿âÂ·¾¶Àï²»ÄÜĞ¯´ø'·ûºÅ£¬´Ë´¦Ó¦¸ÃÊä³öÈÕÖ¾ */
+		log(log::error, "core-basic", "init_database") << "Êı¾İ¿âÂ·¾¶Àï²»ÄÜĞ¯´ø'·ûºÅ" << log::push;
 		return false;
 	}
 
@@ -57,23 +57,23 @@ bool mp::init_database(string _game_db, string _user_db)
 }
 
 /*
-** åˆå§‹åŒ–æ•°æ®åº“ç»“æ„
-** @return è‹¥ä¸ºtrueï¼Œä¿è¯æ¸¸æˆæ•°æ®åº“ä¸ç©å®¶æ•°æ®åº“ç»“æ„å®Œæ•´ */
+** ³õÊ¼»¯Êı¾İ¿â½á¹¹
+** @return ÈôÎªtrue£¬±£Ö¤ÓÎÏ·Êı¾İ¿âÓëÍæ¼ÒÊı¾İ¿â½á¹¹ÍêÕû */
 bool mp::init_database_struct()
 {
 	stringstream sql;
-	//ç©å®¶ç™»è®°è¡¨ï¼Œä¸ºæ¯ä¸ªç™»è®°çš„ç©å®¶åˆ†é…å”¯ä¸€çš„IDï¼Œä»¥åŠç»‘å®š
+	//Íæ¼ÒµÇ¼Ç±í£¬ÎªÃ¿¸öµÇ¼ÇµÄÍæ¼Ò·ÖÅäÎ¨Ò»µÄID£¬ÒÔ¼°°ó¶¨
 	sql << "CREATE TABLE IF NOT EXISTS db_player_data.user_register(id INTEGER PRIMARY KEY AUTOINCREMENT, bind_info VARCHAR);";
 	
-	//åˆ›å»ºç”¨æˆ·åŸºç¡€å±æ€§è¡¨
+	//´´½¨ÓÃ»§»ù´¡ÊôĞÔ±í
 	sql << "CREATE TABLE IF NOT EXISTS db_player_data.basic_attribute(user_id INTEGER,attribute_name VARCHAR,attribute_value VARCHAR);";
 	
 	char* error;
 	int rc = sqlite3_exec(mp::connect, sql.str().c_str(), nullptr, nullptr, &error);
 	if (rc != SQLITE_OK)
 	{
-		//æ­¤å¤„åº”è¾“å‡ºé”™è¯¯ä¿¡æ¯
-		log(log::error, "core-basic", "init_database") << "åˆå§‹åŒ–æ•°æ®åº“ç»“æ„å¤±è´¥:" << sqlite3_errmsg(mp::connect) << log::push;
+		//´Ë´¦Ó¦Êä³ö´íÎóĞÅÏ¢
+		log(log::error, "core-basic", "init_database") << "³õÊ¼»¯Êı¾İ¿â½á¹¹Ê§°Ü:" << sqlite3_errmsg(mp::connect) << log::push;
 	}
 
 	sqlite3_free(error);

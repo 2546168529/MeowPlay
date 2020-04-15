@@ -1,13 +1,24 @@
 #include "log.h"
-
 #include <iostream>
+
+/*
+** 填入日志内容，但不立即输出
+** @param _msg 将要填入的内容 */
+mp::log& mp::log::operator<<(char _msg)
+{
+    char buf[] = {0, '\0'};
+    buf[0] = _msg;
+    
+    m_msg.append(buf);
+    return *this;
+}
 
 /*
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(const char* _msg)
 {
-    m_msg << _msg;
+    m_msg.append(_msg);
     return *this;
 }
 
@@ -16,25 +27,16 @@ mp::log& mp::log::operator<<(const char* _msg)
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(std::string _msg)
 {
-    m_msg << _msg;
+    m_msg.append(_msg);
     return *this;
 }
 
 /*
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(long long _msg)
+mp::log& mp::log::operator<<(int64_t _msg)
 {
-    m_msg << _msg;
-    return *this;
-}
-
-/*
-** 填入日志内容，但不立即输出
-** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(unsigned long long _msg)
-{
-    m_msg << _msg;
+    m_msg.append(std::to_string(_msg));
     return *this;
 }
 
@@ -81,7 +83,6 @@ void mp::log::_push()
     }
 
     std::cout << "["  << m_from << "] [" << m_title << "] ";
-    std::cout << m_msg.str() << std::endl;
+    std::cout << m_msg << std::endl;
     m_msg.clear();
-    
 }

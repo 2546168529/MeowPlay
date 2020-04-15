@@ -1,5 +1,4 @@
 #pragma once
-#include <sstream>
 #include <string>
 
 namespace mp {
@@ -9,13 +8,12 @@ namespace mp {
         enum Type {
             info, wran, error
         };
-
         enum SOP {
             push
         };
 
         private:
-        std::stringstream m_msg;
+        std::string m_msg;
         std::string m_from;
         std::string m_title;
         log::Type m_type;
@@ -29,10 +27,10 @@ namespace mp {
 
         void _push();
 
+        log& operator<<(char _msg);
         log& operator<<(const char* _msg);
         log& operator<<(std::string _msg);
-        log& operator<<(long long _msg);
-        log& operator<<(unsigned long long _msg);
+        log& operator<<(int64_t _msg);
         log& operator<<(SOP _op);
     };
     

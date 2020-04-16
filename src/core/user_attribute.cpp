@@ -12,9 +12,14 @@ using std::stringstream;
 ** @param _properties 将要读取的玩家属性名称
 ** @param read_data 查询完毕后调用此函数，第一个参数是查询结果记录集已指向要读取的记录（无需释放），第二个参数是要读取的字段索引
 ** @return 是否查询成功
-** @lock 此函数仅进行读操作，无锁 */
+** @lock 此函数仅进行读操作，且不调用任何全局资源，无锁 */
 bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> read_data)
 {
+	//若程序非运行状态，取消操作
+	if(!read_status(status_runtime)) return false;
+	//若程序当前状态为禁止读数据库，取消操作
+	if(read_status(status_ban_read_database)) return false;
+
 	bool status_flag = false;
 
 	int rc = 0;
@@ -58,9 +63,14 @@ bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<v
 ** @param _properties 将要修改的的玩家属性名称
 ** @param bind_new_data 开始修改或新增数据时，会调用此函数，第一个参数是sqlite3_stmt，第二个参数是数据参数绑定索引
 ** @return 是否写入成功
-** @lock 此函数将进行写入操作，开启锁，函数执行期间不允许其它写行为 */
+** @lock 此函数将进行写入操作，但不调用全局资源，开启数据库写锁，函数执行期间不允许其它写行为 */
 bool mp::write_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> bind_new_data)
 {
+	//若程序非运行状态，取消操作
+	if(!read_status(status_runtime)) return false;
+	//若程序当前状态为禁止写数据库，取消操作
+	if(read_status(status_ban_write_database)) return false;
+
 	mp::lock_write.lock();
 	bool status_flag = false;
 

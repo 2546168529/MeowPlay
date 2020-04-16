@@ -1,6 +1,14 @@
 #include "basic.h"
 #include <sstream>
 
+/*
+** 程序运行状态
+** 第1位(status_runtime)：1表示正在运行，0表示程序已停止
+** 第2位(status_ban_read_database)：1禁止所有数据库的读操作，0表示允许所有数据库的读操作
+** 第3位(status_ban_write_database)：1禁止所有数据库的写操作，0表示允许所有数据库的写操作
+** 其余位保留 */
+std::atomic_uint32_t mp::app_status(0);
+
 /* 
 ** 数据库写锁
 ** 主要用途：
@@ -10,6 +18,7 @@ std::mutex mp::lock_write;
 
 /*
 ** SQLITE数据库连接句柄
+** 作为特殊全局资源，不允许在运行时改变其值
 ** 保证玩家数据库(db_player_data)已附加 */
 sqlite3* mp::connect = nullptr;
 
@@ -48,7 +57,7 @@ bool mp::init_database(string _game_db, string _user_db)
 			sqlite3_finalize(stmt);
 			if (rc == SQLITE_DONE)
 			{
-				return true;
+				return init_database_struct();
 			}
 		}
 		sqlite3_finalize(stmt);
@@ -82,5 +91,10 @@ bool mp::init_database_struct()
 	sqlite3_free(error);
 
 	lock_write.unlock();
+	if (rc == SQLITE_OK)
+	{
+		set_status(status_runtime, true);
+	}
+	
 	return rc == SQLITE_OK;
 }

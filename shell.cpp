@@ -5,7 +5,6 @@
 int main()
 {
     mp::init_database("data/game.db", "data/user.db");
-	mp::init_database_struct();
 
     std::cout << (mp::write_user_attribute_text(2, "name", "Ao2")?"写入成功":"写入失败") << std::endl;
     

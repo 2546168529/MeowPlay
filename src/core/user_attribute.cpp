@@ -11,11 +11,10 @@ using std::stringstream;
 ** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
 ** @param _properties 将要读取的玩家属性名称
 ** @param read_data 查询完毕后调用此函数，第一个参数是查询结果记录集已指向要读取的记录（无需释放），第二个参数是要读取的字段索引
-** @return 是否查询成功 */
+** @return 是否查询成功
+** @lock 此函数仅进行读操作，无锁 */
 bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> read_data)
 {
-
-	mp::lock_db.lock();
 	bool status_flag = false;
 
 	int rc = 0;
@@ -49,7 +48,7 @@ bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<v
 	}
 	
 	sqlite3_finalize(stmt);
-	mp::lock_db.unlock();
+
 	return status_flag;
 }
 
@@ -58,10 +57,11 @@ bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<v
 ** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
 ** @param _properties 将要修改的的玩家属性名称
 ** @param bind_new_data 开始修改或新增数据时，会调用此函数，第一个参数是sqlite3_stmt，第二个参数是数据参数绑定索引
-** @return 是否写入成功 */
+** @return 是否写入成功
+** @lock 此函数将进行写入操作，开启锁，函数执行期间不允许其它写行为 */
 bool mp::write_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> bind_new_data)
 {
-	mp::lock_db.lock();
+	mp::lock_write.lock();
 	bool status_flag = false;
 
 	int rc = 0;
@@ -122,7 +122,7 @@ bool mp::write_user_attribute(int64_t _user, string& _properties, std::function<
 	
 	sqlite3_finalize(quer_stmt);
 	sqlite3_finalize(exec_stmt);
-	mp::lock_db.unlock();
+	mp::lock_write.unlock();
 	return status_flag;
 }
 

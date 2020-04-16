@@ -2,11 +2,11 @@
 #include <sstream>
 
 /* 
-** 用于数据库读写的锁
+** 数据库写锁
 ** 主要用途：
-** 绝对避免在事务处理时进行其它读写操作
+** 绝对避免在事务处理时进行其他写操作
 ** 绝对避免同时发生写入操作 */
-std::mutex mp::lock_db;
+std::mutex mp::lock_write;
 
 /*
 ** SQLITE数据库连接句柄
@@ -63,6 +63,7 @@ bool mp::init_database(string _game_db, string _user_db)
 ** @return 若为true，保证游戏数据库与玩家数据库结构完整 */
 bool mp::init_database_struct()
 {
+	lock_write.lock();
 	stringstream sql;
 	//玩家登记表，为每个登记的玩家分配唯一的ID，以及绑定
 	sql << "CREATE TABLE IF NOT EXISTS db_player_data.user_register(id INTEGER PRIMARY KEY AUTOINCREMENT, bind_info VARCHAR);";
@@ -80,5 +81,6 @@ bool mp::init_database_struct()
 
 	sqlite3_free(error);
 
+	lock_write.unlock();
 	return rc == SQLITE_OK;
 }

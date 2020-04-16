@@ -8,7 +8,7 @@
 #include "../sqlite/sqlite3.h"
 
 namespace mp {
-	extern std::mutex lock_db;
+	extern std::mutex lock_write;
 	extern sqlite3* connect;
 	extern const std::string nullstr;
 

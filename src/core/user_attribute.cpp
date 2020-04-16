@@ -126,7 +126,12 @@ bool mp::write_user_attribute(int64_t _user, string& _properties, std::function<
 	return status_flag;
 }
 
-
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 查询失败后默认返回的内容
+** @return 查询结果 */
 int32_t mp::read_user_attribute_int32(int64_t _user, string _properties, int32_t _default)
 {
 	int32_t result = _default;
@@ -136,7 +141,12 @@ int32_t mp::read_user_attribute_int32(int64_t _user, string _properties, int32_t
 	return result;
 }
 
-
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 查询失败后默认返回的内容
+** @return 查询结果 */
 int64_t mp::read_user_attribute_int64(int64_t _user, string _properties, int64_t _default)
 {
 	int64_t result = _default;
@@ -146,7 +156,12 @@ int64_t mp::read_user_attribute_int64(int64_t _user, string _properties, int64_t
 	return result;
 }
 
-
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 查询失败后默认返回的内容
+** @return 查询结果 */
 double mp::read_user_attribute_double(int64_t _user, string _properties, double _default)
 {
 	double result = _default;
@@ -157,6 +172,12 @@ double mp::read_user_attribute_double(int64_t _user, string _properties, double 
 	return result;
 }
 
+/*
+** 读取用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要读取的玩家属性名称
+** @param _default 查询失败后默认返回的内容
+** @return 查询结果 */
 string mp::read_user_attribute_text(int64_t _user, string _properties, string _default)
 {
 	string result = _default;
@@ -168,6 +189,12 @@ string mp::read_user_attribute_text(int64_t _user, string _properties, string _d
 }
 
 
+/*
+** 写用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要修改的的玩家属性名称
+** @param _data 要写入的数据
+** @return 是否写入成功 */
 bool mp::write_user_attribute_int32(int64_t _user, std::string _properties, int32_t _data)
 {
 	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
@@ -175,6 +202,12 @@ bool mp::write_user_attribute_int32(int64_t _user, std::string _properties, int3
 	});
 }
 
+/*
+** 写用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要修改的的玩家属性名称
+** @param _data 要写入的数据
+** @return 是否写入成功 */
 bool mp::write_user_attribute_int64(int64_t _user, std::string _properties, int64_t _data)
 {
 	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
@@ -182,7 +215,12 @@ bool mp::write_user_attribute_int64(int64_t _user, std::string _properties, int6
 	});
 }
 
-
+/*
+** 写用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要修改的的玩家属性名称
+** @param _data 要写入的数据
+** @return 是否写入成功 */
 bool mp::write_user_attribute_double(int64_t _user, std::string _properties, double _data)
 {
 	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
@@ -190,7 +228,12 @@ bool mp::write_user_attribute_double(int64_t _user, std::string _properties, dou
 	});
 }
 
-
+/*
+** 写用户基础属性
+** @param _user 用户ID，此ID为玩家在注册时系统自动分配的id，记录在user_register表
+** @param _properties 将要修改的的玩家属性名称
+** @param _data 要写入的数据
+** @return 是否写入成功 */
 bool mp::write_user_attribute_text(int64_t _user, std::string _properties, string _data)
 {
 	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){

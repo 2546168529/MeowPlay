@@ -1,7 +1,7 @@
 #Makefile
 
 CC = g++
-CFLAGS = -std=c++11
+CFLAGS = -std=c++17
 
 object = obj/shell.o obj/sqlite3.o obj/basic.o obj/user_attribute.o obj/log.o obj/math_exp.o
 

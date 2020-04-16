@@ -2,12 +2,8 @@
 #include <sstream>
 
 /*
-** 程序运行状态
-** 第1位(status_runtime)：1表示正在运行，0表示程序已停止
-** 第2位(status_ban_read_database)：1禁止所有数据库的读操作，0表示允许所有数据库的读操作
-** 第3位(status_ban_write_database)：1禁止所有数据库的写操作，0表示允许所有数据库的写操作
-** 其余位保留 */
-std::atomic_uint32_t mp::app_status(0);
+** 程序运行状态 */
+mp::app_info_struct mp::app_info;
 
 /* 
 ** 数据库写锁
@@ -91,10 +87,7 @@ bool mp::init_database_struct()
 	sqlite3_free(error);
 
 	lock_write.unlock();
-	if (rc == SQLITE_OK)
-	{
-		set_status(status_runtime, true);
-	}
+	app_info.status_runtime = true;
 	
 	return rc == SQLITE_OK;
 }

@@ -16,9 +16,9 @@ using std::stringstream;
 bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> read_data)
 {
 	//若程序非运行状态，取消操作
-	if(!read_status(status_runtime)) return false;
+	if(!app_info.status_runtime) return false;
 	//若程序当前状态为禁止读数据库，取消操作
-	if(read_status(status_ban_read_database)) return false;
+	if(app_info.status_ban_read_database) return false;
 
 	bool status_flag = false;
 
@@ -67,9 +67,9 @@ bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<v
 bool mp::write_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> bind_new_data)
 {
 	//若程序非运行状态，取消操作
-	if(!read_status(status_runtime)) return false;
+	if(!app_info.status_runtime) return false;
 	//若程序当前状态为禁止写数据库，取消操作
-	if(read_status(status_ban_write_database)) return false;
+	if(app_info.status_ban_write_database) return false;
 
 	mp::lock_write.lock();
 	bool status_flag = false;

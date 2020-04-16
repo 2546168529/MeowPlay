@@ -1,6 +1,7 @@
 #include "user_attribute.h"
 #include "../util/log.h"
 #include <sstream>
+#include <algorithm>
 
 using std::string;
 using std::stringstream;
@@ -11,8 +12,9 @@ using std::stringstream;
 ** @param _properties 将要读取的玩家属性名称
 ** @param read_data 查询完毕后调用此函数，第一个参数是查询结果记录集已指向要读取的记录（无需释放），第二个参数是要读取的字段索引
 ** @return 是否查询成功 */
-bool mp::read_user_attribute(int64_t _user, string _properties, void (*read_data)(sqlite3_stmt*, int))
+bool mp::read_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> read_data)
 {
+
 	mp::lock_db.lock();
 	bool status_flag = false;
 
@@ -57,7 +59,7 @@ bool mp::read_user_attribute(int64_t _user, string _properties, void (*read_data
 ** @param _properties 将要修改的的玩家属性名称
 ** @param bind_new_data 开始修改或新增数据时，会调用此函数，第一个参数是sqlite3_stmt，第二个参数是数据参数绑定索引
 ** @return 是否写入成功 */
-bool mp::write_user_attribute(int64_t _user, string _properties, void (*bind_new_data)(sqlite3_stmt*, int))
+bool mp::write_user_attribute(int64_t _user, string& _properties, std::function<void(sqlite3_stmt*, int)> bind_new_data)
 {
 	mp::lock_db.lock();
 	bool status_flag = false;
@@ -122,4 +124,76 @@ bool mp::write_user_attribute(int64_t _user, string _properties, void (*bind_new
 	sqlite3_finalize(exec_stmt);
 	mp::lock_db.unlock();
 	return status_flag;
+}
+
+
+int32_t mp::read_user_attribute_int32(int64_t _user, string _properties, int32_t _default)
+{
+	int32_t result = _default;
+	read_user_attribute(_user, _properties, [&result](sqlite3_stmt* _stmt, int _index){
+		result = sqlite3_column_int(_stmt, _index);
+	});
+	return result;
+}
+
+
+int64_t mp::read_user_attribute_int64(int64_t _user, string _properties, int64_t _default)
+{
+	int64_t result = _default;
+	read_user_attribute(_user, _properties, [&result](sqlite3_stmt* _stmt, int _index){
+		result = sqlite3_column_int64(_stmt, _index);
+	});
+	return result;
+}
+
+
+double mp::read_user_attribute_double(int64_t _user, string _properties, double _default)
+{
+	double result = _default;
+	read_user_attribute(_user, _properties, [&result](sqlite3_stmt* _stmt, int _index){
+		result = sqlite3_column_double(_stmt, _index);
+	});
+
+	return result;
+}
+
+string mp::read_user_attribute_text(int64_t _user, string _properties, string _default)
+{
+	string result = _default;
+	read_user_attribute(_user, _properties, [&result](sqlite3_stmt* _stmt, int _index){
+		result = reinterpret_cast<const char*>(sqlite3_column_text(_stmt, _index));
+	});
+
+	return result;
+}
+
+
+bool mp::write_user_attribute_int32(int64_t _user, std::string _properties, int32_t _data)
+{
+	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
+		sqlite3_bind_int(_stmt, _index, _data);
+	});
+}
+
+bool mp::write_user_attribute_int64(int64_t _user, std::string _properties, int64_t _data)
+{
+	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
+		sqlite3_bind_int64(_stmt, _index, _data);
+	});
+}
+
+
+bool mp::write_user_attribute_double(int64_t _user, std::string _properties, double _data)
+{
+	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
+		sqlite3_bind_double(_stmt, _index, _data);
+	});
+}
+
+
+bool mp::write_user_attribute_text(int64_t _user, std::string _properties, string _data)
+{
+	return write_user_attribute(_user, _properties, [&_data](sqlite3_stmt* _stmt, int _index){
+		sqlite3_bind_text(_stmt, _index, _data.c_str(), _data.length(), SQLITE_TRANSIENT);
+	});
 }

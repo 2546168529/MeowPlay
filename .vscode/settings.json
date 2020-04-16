@@ -43,7 +43,14 @@
         "xtr1common": "cpp",
         "xutility": "cpp",
         "*.rh": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "deque": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp"
     },
     "cmake.configureOnOpen": true,
 

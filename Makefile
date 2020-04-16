@@ -3,25 +3,25 @@
 CC = g++
 CFLAGS = -std=c++11
 
-object = shell.o sqlite3.o basic.o user_attribute.o log.o math_exp.o
+object = obj/shell.o obj/sqlite3.o obj/basic.o obj/user_attribute.o obj/log.o obj/math_exp.o
 
 build: $(object)
 	$(CC) $(CFLAGS) $(object) -o shell
 
-shell.o: shell.cpp
-	$(CC) $(CFLAGS) -c shell.cpp
+obj/shell.o: shell.cpp
+	$(CC) $(CFLAGS) -c shell.cpp -o $@
 
-basic.o: src/core/basic.cpp
-	$(CC) $(CFLAGS) -c src/core/basic.cpp
+obj/basic.o: src/core/basic.cpp
+	$(CC) $(CFLAGS) -c src/core/basic.cpp -o $@
 
-log.o: src/util/log.cpp
-	$(CC) $(CFLAGS) -c src/util/log.cpp
+obj/log.o: src/util/log.cpp
+	$(CC) $(CFLAGS) -c src/util/log.cpp -o $@
 
-math_exp.o: src/util/math_exp.cpp
-	$(CC) $(CFLAGS) -c src/util/math_exp.cpp
+obj/math_exp.o: src/util/math_exp.cpp
+	$(CC) $(CFLAGS) -c src/util/math_exp.cpp -o $@
 
-user_attribute.o: src/core/user_attribute.cpp
-	$(CC) $(CFLAGS) -c src/core/user_attribute.cpp
+obj/user_attribute.o: src/core/user_attribute.cpp
+	$(CC) $(CFLAGS) -c src/core/user_attribute.cpp -o $@
 
-sqlite3.o: src/sqlite/sqlite3.c
-	gcc -c src/sqlite/sqlite3.c
+obj/sqlite3.o: src/sqlite/sqlite3.c
+	gcc -c src/sqlite/sqlite3.c -o $@

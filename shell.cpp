@@ -7,13 +7,9 @@ int main()
     mp::init_database("data/game.db", "data/user.db");
 	mp::init_database_struct();
 
-    std::cout << mp::write_user_attribute(1, "name", [](sqlite3_stmt* _stmt, int _index){
-            sqlite3_bind_int(_stmt, _index, 1236);
-        }) << std::endl;
-
-    mp::read_user_attribute(1, "name", [](sqlite3_stmt* _stmt, int _index){
-        mp::log("shell", "debug") << reinterpret_cast<const char*>(sqlite3_column_text(_stmt, _index)) << mp::log::push;
-    });
+    std::cout << (mp::write_user_attribute_text(2, "name", "Ao2")?"写入成功":"写入失败") << std::endl;
+    
+    std::cout << mp::read_user_attribute_text(2, "name") << std::endl;
 
     system("pause");
     return 0;

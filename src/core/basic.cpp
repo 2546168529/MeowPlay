@@ -13,6 +13,8 @@ std::mutex mp::lock_db;
 ** 保证玩家数据库(db_player_data)已附加 */
 sqlite3* mp::connect = nullptr;
 
+const std::string mp::nullstr("");
+
 using std::string;
 using std::stringstream;
 

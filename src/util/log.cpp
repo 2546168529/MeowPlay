@@ -6,7 +6,7 @@
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(char _msg)
 {
-    m_msg.append(1, _msg);
+    this->m_msg.append(1, _msg);
     return *this;
 }
 
@@ -15,7 +15,7 @@ mp::log& mp::log::operator<<(char _msg)
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(const char* _msg)
 {
-    m_msg.append(_msg);
+    this->m_msg.append(_msg);
     return *this;
 }
 
@@ -24,7 +24,7 @@ mp::log& mp::log::operator<<(const char* _msg)
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(std::string _msg)
 {
-    m_msg.append(_msg);
+    this->m_msg.append(_msg);
     return *this;
 }
 
@@ -33,7 +33,7 @@ mp::log& mp::log::operator<<(std::string _msg)
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(int64_t _msg)
 {
-    m_msg.append(std::to_string(_msg));
+    this->m_msg.append(std::to_string(_msg));
     return *this;
 }
 
@@ -42,7 +42,7 @@ mp::log& mp::log::operator<<(int64_t _msg)
 ** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(double _msg)
 {
-    m_msg.append(std::to_string(_msg));
+    this->m_msg.append(std::to_string(_msg));
     return *this;
 }
 
@@ -55,11 +55,11 @@ mp::log& mp::log::operator<<(SOP _op)
     switch (_op)
     {
     case SOP::push:
-        _push();
+        this->_push();
         break;
     
     case SOP::clear:
-        _clear();
+        this->_clear();
         break;
 
     default:
@@ -92,9 +92,9 @@ void mp::log::_push()
         break;
     }
 
-    std::cout << "["  << m_from << "] [" << m_title << "] ";
-    std::cout << m_msg << std::endl;
-    _clear();
+    std::cout << "["  << this->m_from << "] [" << this->m_title << "] ";
+    std::cout << this->m_msg << std::endl;
+    this->_clear();
     
 }
 
@@ -102,5 +102,5 @@ void mp::log::_push()
 ** 清空消息缓冲区消息内容 */
 void mp::log::_clear()
 {
-    m_msg.resize(0);
+    this->m_msg.resize(0);
 }

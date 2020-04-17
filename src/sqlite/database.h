@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <mutex>
 #include <atomic>
+#include <memory>
 
 namespace mp{
     namespace database{
@@ -178,29 +179,33 @@ namespace mp{
                 return this->m_open_success;
             }
             
-            int32_t column_int32(int _iCol)
-            {
-                if(this->m_stmt == nullptr) return 0;
-                return sqlite3_column_int(this->m_stmt, _iCol);
-            }
+			void column(int _iCol, int32_t& _nRec)
+			{
+				_nRec = sqlite3_column_int(this->m_stmt, _iCol);
+			}
 
-            int64_t column_int64(int _iCol)
-            {
-                if(this->m_stmt == nullptr) return 0;
-                return sqlite3_column_int64(this->m_stmt, _iCol);
-            }
+			void column(int _iCol, int64_t& _nRec)
+			{
+				_nRec = sqlite3_column_int64(this->m_stmt, _iCol);
+			}
 
-            double column_double(int _iCol)
-            {
-                if(this->m_stmt == nullptr) return 0;
-                return sqlite3_column_double(this->m_stmt, _iCol);
-            }
+			void column(int _iCol, double& _nRec)
+			{
+				_nRec = sqlite3_column_double(this->m_stmt, _iCol);
+			}
 
-            const char* column_text(int _iCol)
-            {
-                if(this->m_stmt == nullptr) return nullptr;
-                return reinterpret_cast<const char*>(sqlite3_column_text(this->m_stmt, _iCol));
-            }
+			void column(int _iCol, std::string& _nRec)
+			{
+				_nRec = reinterpret_cast<const char*>(sqlite3_column_text(this->m_stmt, _iCol));
+			}
+
+            template<class __T>
+			__T column(int _iCol)
+			{
+				__T nRec;
+				column(_iCol, nRec);
+				return nRec;
+			}
 
             sqlite3_stmt* stmt_ptr()
             {
@@ -237,7 +242,7 @@ namespace mp{
 
             const char* errstr();
 
-            const char* errstr(int rc);
+            const char* errstr(int _rc);
 
             sqlite3* connect_ptr();
 

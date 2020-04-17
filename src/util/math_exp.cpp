@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 
-/*
+/**
 ** 辅助函数，用于取两个栈顶元素
 ** @return 若stack里的元素不足两个，则返回false表示获取失败*/
 template<typename T>
@@ -19,7 +19,7 @@ inline bool rpn_top2(std::stack<T>& rpn, T& e, T& s)
 	return true;
 }
 
-/*
+/**
 ** 计算逆波兰表达式
 ** @param _rpn_exp 逆波兰表达式串
 ** @param _exp_len 逆波兰表达式串的长度
@@ -97,7 +97,7 @@ double calculate_rpn(const char* _rpn_exp, size_t _exp_len)
 	return rpn.top();
 }
 
-/*
+/**
 ** 将一个数学公式构造为逆波兰表达式
 ** @param _math_exp 表达式串
 ** @param _exp_len 表达式串的长度

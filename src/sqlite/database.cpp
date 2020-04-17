@@ -96,9 +96,9 @@ const char* mp::database::manage::errstr()
     return sqlite3_errstr(this->m_last_error);
 }
 
-const char* mp::database::manage::errstr(int rc)
+const char* mp::database::manage::errstr(int _rc)
 {
-    return sqlite3_errstr(rc);
+    return sqlite3_errstr(_rc);
 }
 
 sqlite3* mp::database::manage::connect_ptr()

@@ -24,7 +24,7 @@ const std::string mp::nullstr("");
 using std::string;
 using std::stringstream;
 
-/*
+/**
 ** 初始化数据库
 ** @param _game_db 游戏数据库路径，用于保存游戏数据
 ** @param _user_db 玩家数据库路径，仅用于存储玩家数据
@@ -60,7 +60,7 @@ bool mp::init_database(string _game_db, string _user_db)
 	return false;
 }
 
-/*
+/**
 ** 初始化数据库结构
 ** @return 若为true，保证游戏数据库与玩家数据库结构完整 */
 bool mp::init_database_struct()

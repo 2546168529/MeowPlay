@@ -4,7 +4,7 @@
 #include <functional>
 
 namespace mp {
-    bool read_player_attribute(int64_t _player_id, std::string& _properties, std::function<void(sqlite3_stmt*, int)>);
+    bool read_player_attribute(int64_t _player_id, std::string& _properties, std::function<void(database::stmt&, int)> call_back);
     int32_t read_player_attribute_int32(int64_t _player_id, std::string _properties, int32_t _default = 0);
     int64_t read_player_attribute_int64(int64_t _player_id, std::string _properties, int64_t _default = 0);
     double read_player_attribute_double(int64_t _player_id, std::string _properties, double _default = 0);

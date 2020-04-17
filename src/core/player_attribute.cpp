@@ -13,7 +13,7 @@ using std::stringstream;
 ** @param read_data 查询完毕后调用此函数，第一个参数是查询结果记录集已指向要读取的记录（无需释放），第二个参数是要读取的字段索引
 ** @return 是否查询成功
 ** @lock 此函数仅进行读操作，且不调用任何全局资源，无锁 */
-bool mp::read_player_attribute(int64_t _player_id, string& _properties, std::function<void(sqlite3_stmt*, int)> read_data)
+bool mp::read_player_attribute(int64_t _player_id, string& _properties, std::function<void(database::stmt&, int)> call_back)
 {
 	//若程序非运行状态，取消操作
 	if(!app_info.status_runtime) return false;
@@ -23,18 +23,15 @@ bool mp::read_player_attribute(int64_t _player_id, string& _properties, std::fun
 	bool status_flag = false;
 
 	int rc = 0;
-
-	sqlite3_stmt *stmt = nullptr;
 	
-	rc = sqlite3_prepare_v2(mp::connect, "SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", -1, &stmt, nullptr);
-	
-	if(rc == SQLITE_OK) 
+	database::stmt stmt = connect_manage.prepare("SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1");
+	if(stmt.open_success()) 
 	{
-		sqlite3_bind_int64(stmt, sqlite3_bind_parameter_index(stmt, "@player_id"), _player_id);
-		sqlite3_bind_text(stmt, sqlite3_bind_parameter_index(stmt, "@attribute_name"), _properties.c_str(), _properties.size(), SQLITE_TRANSIENT);
-		if(sqlite3_step(stmt) == SQLITE_ROW)
+		stmt.bind_name({"@player_id", "@attribute_name"}, _player_id, _properties);
+		//stmt.bind(1, 2);
+		if(stmt.step() == SQLITE_ROW)
 		{
-			read_data(stmt, 0);
+			call_back(stmt, 0);
 			status_flag = true;
 		}
 		else
@@ -48,11 +45,9 @@ bool mp::read_player_attribute(int64_t _player_id, string& _properties, std::fun
 	else
 	{
 		/* sqlite3_prepare_v2失败，应输出日志 */
-		log(log::error, "player_attribute", "read_player_attribute_int32") << "查询ID为" << _player_id << "的玩家的" << _properties << "属性时发生错误：" << sqlite3_errmsg(mp::connect) << log::push;
+		log(log::error, "player_attribute", "read_player_attribute_int32") << "查询ID为" << _player_id << "的玩家的" << _properties << "属性时发生错误：" << connect_manage.errstr() << log::push;
 		status_flag = false;
 	}
-	
-	sqlite3_finalize(stmt);
 
 	return status_flag;
 }
@@ -145,8 +140,8 @@ bool mp::write_player_attribute(int64_t _player_id, string& _properties, std::fu
 int32_t mp::read_player_attribute_int32(int64_t _player_id, string _properties, int32_t _default)
 {
 	int32_t result = _default;
-	read_player_attribute(_player_id, _properties, [&result](sqlite3_stmt* _stmt, int _index){
-		result = sqlite3_column_int(_stmt, _index);
+	read_player_attribute(_player_id, _properties, [&result](database::stmt& _stmt, int _index){
+		result = _stmt.column_int32(_index);
 	});
 	return result;
 }
@@ -160,8 +155,8 @@ int32_t mp::read_player_attribute_int32(int64_t _player_id, string _properties, 
 int64_t mp::read_player_attribute_int64(int64_t _player_id, string _properties, int64_t _default)
 {
 	int64_t result = _default;
-	read_player_attribute(_player_id, _properties, [&result](sqlite3_stmt* _stmt, int _index){
-		result = sqlite3_column_int64(_stmt, _index);
+	read_player_attribute(_player_id, _properties, [&result](database::stmt& _stmt, int _index){
+		result = result = _stmt.column_int64(_index);
 	});
 	return result;
 }
@@ -175,8 +170,8 @@ int64_t mp::read_player_attribute_int64(int64_t _player_id, string _properties, 
 double mp::read_player_attribute_double(int64_t _player_id, string _properties, double _default)
 {
 	double result = _default;
-	read_player_attribute(_player_id, _properties, [&result](sqlite3_stmt* _stmt, int _index){
-		result = sqlite3_column_double(_stmt, _index);
+	read_player_attribute(_player_id, _properties, [&result](database::stmt& _stmt, int _index){
+		result = _stmt.column_double(_index);
 	});
 
 	return result;
@@ -191,8 +186,8 @@ double mp::read_player_attribute_double(int64_t _player_id, string _properties, 
 string mp::read_player_attribute_text(int64_t _player_id, string _properties, string _default)
 {
 	string result = _default;
-	read_player_attribute(_player_id, _properties, [&result](sqlite3_stmt* _stmt, int _index){
-		result = reinterpret_cast<const char*>(sqlite3_column_text(_stmt, _index));
+	read_player_attribute(_player_id, _properties, [&result](database::stmt& _stmt, int _index){
+		result = _stmt.column_text(_index);
 	});
 
 	return result;

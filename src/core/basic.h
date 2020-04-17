@@ -7,6 +7,7 @@
 
 #include "../util/log.h"
 #include "../sqlite/sqlite3.h"
+#include "../sqlite/database.h"
 
 namespace mp {
 	
@@ -28,6 +29,7 @@ namespace mp {
 
 	extern std::mutex lock_write;
 	extern sqlite3* connect;
+	extern mp::database::manage connect_manage;
 
 	bool init_database(std::string _game_db, std::string _user_db);
 	bool init_database_struct();

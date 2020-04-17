@@ -22,10 +22,12 @@ inline __dt read_player_attribute(int64_t _player_id, const __pro _properties, c
 	if (mp::app_info.status_ban_read_database)
 		return result;
 
-	mp::database::stmt stmt = mp::connect_manage.prepare("SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1");
+	mp::database::stmt stmt = mp::connect_manage.prepare(
+		"SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
+		{"@player_id", "@attribute_name"}, 
+		_player_id, _properties);
 	if (stmt.open_success())
 	{
-		stmt.bind({"@player_id", "@attribute_name"}, _player_id, _properties);
 		if (stmt.step() == SQLITE_ROW)
 		{
 			stmt.column(0, result);
@@ -65,10 +67,13 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 	mp::lock_write.lock();
 	bool status_flag = false;
 
-	mp::database::stmt quer_stmt = mp::connect_manage.prepare("SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1");
+	mp::database::stmt quer_stmt = mp::connect_manage.prepare(
+		"SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
+		{"@player_id", "@attribute_name"}, 
+		_player_id, _properties);
+
 	if (quer_stmt.open_success())
 	{
-		quer_stmt.bind({"@player_id", "@attribute_name"}, _player_id, _properties);
 
 		const char *exec_sql;
 		if (quer_stmt.step() == SQLITE_ROW)
@@ -81,7 +86,7 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 			/* 未查找到记录，执行插入操作 */
 			exec_sql = "INSERT INTO db_player_data.player_attribute(player_id, attribute_name, attribute_value) VALUES (@player_id, @attribute_name, @attribute_value)";
 		}
-		mp::database::stmt exec_stmt = mp::connect_manage.prepare(exec_sql);
+		
 		status_flag = mp::connect_manage.exec_noquery(exec_sql, {"@player_id", "@attribute_name", "@attribute_value"}, _player_id, _properties, _data);
 		if (!status_flag)
 		{

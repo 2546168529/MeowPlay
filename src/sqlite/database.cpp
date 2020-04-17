@@ -1,16 +1,75 @@
 #include "database.h"
 
 mp::database::stmt::stmt(sqlite3* _connect, const char* sql)
+    : m_use(new size_t(1))
 {
     const char *tail;
     int rc = sqlite3_prepare_v2(_connect, sql, -1, &this->m_stmt, &tail);
     this->m_last_error = rc;
     m_open_success = (rc == SQLITE_OK);
+
+}
+
+mp::database::stmt::stmt(const stmt& _stmt) noexcept
+{
+    m_use = _stmt.m_use;
+    (*this->m_use)++;
+
+    this->m_open_success = _stmt.m_open_success;
+    this->m_last_error = _stmt.m_last_error;
+    this->m_stmt = _stmt.m_stmt;
+}
+
+mp::database::stmt& mp::database::stmt::operator=(const stmt& _stmt) noexcept
+{
+    ++*_stmt.m_use;//先将传入的stmt的所用记次+1，避免自赋值造成的异常
+
+    if(--*(this->m_use) == 0)
+    {
+        delete this->m_use;
+        this->finalize();
+    }
+
+    this->m_use = _stmt.m_use;
+    this->m_open_success = _stmt.m_open_success;
+    this->m_last_error = _stmt.m_last_error;
+    this->m_stmt = _stmt.m_stmt;
 }
 
 mp::database::stmt::~stmt()
 {
-    this->finalize();
+    this->free();
+}
+
+mp::database::stmt& mp::database::stmt::operator=(stmt&& _stmt) noexcept
+{
+	if(this != &_stmt)
+	{
+		this->free();
+
+		this->m_use = _stmt.m_use;
+    	this->m_open_success = _stmt.m_open_success;
+    	this->m_last_error = _stmt.m_last_error;
+    	this->m_stmt = _stmt.m_stmt;
+	}
+	return *this;
+}
+
+mp::database::stmt::stmt(stmt&& _stmt) noexcept
+	: m_stmt(_stmt.m_stmt), m_use(_stmt.m_use), m_last_error(_stmt.m_last_error), m_open_success(_stmt.m_open_success)
+{
+	_stmt.m_use = nullptr;
+	_stmt.m_stmt = nullptr;
+}
+
+void mp::database::stmt::free()
+{
+    if(this->m_use != nullptr && --*(this->m_use) == 0)
+    {
+        delete this->m_use;
+        this->finalize();
+        this->m_use = nullptr;
+    }
 }
 
 bool mp::database::stmt::finalize()

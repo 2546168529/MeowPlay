@@ -13,8 +13,9 @@ namespace mp{
         class stmt 
         {
             sqlite3_stmt* m_stmt;
-            std::atomic_int m_last_error;
+            int m_last_error;
             bool m_open_success;
+			size_t* m_use;
             
             /* 根据索引的参数绑定 */
             template<class... __args>
@@ -149,8 +150,15 @@ namespace mp{
             template<class... __args>
             bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name){ return true; }
 
+			void free();
+
         public:
             stmt(sqlite3* _connect, const char* sql);
+			stmt(const stmt& _stmt) noexcept;
+			stmt(stmt&& _stmt) noexcept;
+
+			stmt& operator=(const stmt& _stmt) noexcept;
+			stmt& operator=(stmt&& _stmt) noexcept;
 
             ~stmt();
 
@@ -168,7 +176,7 @@ namespace mp{
             }
 
             template<class... __args>
-			bool bind_name(const std::initializer_list<const char*> _param_name, const __args&... _args)
+			bool bind(const std::initializer_list<const char*> _param_name, const __args&... _args)
 			{
 				if (this->m_stmt == nullptr) return false;
 				return this->bind_recur_name(0, _param_name, std::forward<decltype(_args)>(_args)...);
@@ -232,7 +240,34 @@ namespace mp{
 
             bool exec_noquery(const char* _sql);
 
+			template<class... __args>
+			bool exec_noquery(const char* _sql, const __args &... _args)
+			{
+				stmt exec_stmt = prepare(_sql);
+				exec_stmt.bind(std::forward<decltype(_args)>(_args)...);
+				return exec_stmt.step() == SQLITE_DONE;
+			}
+
+			template<class... __args>
+			bool exec_noquery(const char* _sql, std::initializer_list<const char*> __ascii_iswdigit, const __args &... _args)
+			{
+				stmt exec_stmt = prepare(_sql);
+				exec_stmt.bind(__ascii_iswdigit, std::forward<decltype(_args)>(_args)...);
+				return exec_stmt.step() == SQLITE_DONE;
+			}
+
             stmt prepare(const char* _sql);
+
+			template<class... __args>
+			stmt prepare(const char* _sql, const __args &... _args)
+			{
+				stmt exec_stmt = prepare(_sql);
+				if(exec_stmt.open_success())
+				{
+					exec_stmt.bind(std::forward<decltype(_args)>(_args)...);
+				}
+				return exec_stmt;
+			}
 
             bool close();
 

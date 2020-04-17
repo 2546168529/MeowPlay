@@ -16,8 +16,7 @@ std::mutex mp::lock_write;
 ** SQLITE数据库连接句柄
 ** 作为特殊全局资源，不允许在运行时改变其值
 ** 保证玩家数据库(db_player_data)已附加 */
-sqlite3* mp::connect = nullptr;
-mp::database::manage mp::connect_manage;
+mp::database::manage mp::db_manage;
 
 const std::string mp::nullstr("");
 
@@ -38,23 +37,18 @@ bool mp::init_database(string _game_db, string _user_db)
 		log(log::error, "core-basic", "init_database") << "数据库路径里不能携带'符号" << log::push;
 		return false;
 	}
-
-	int rc;
-	rc = sqlite3_open_v2(_game_db.c_str(), &connect, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-	connect_manage.connect_ptr(connect);
-
-	if (rc == SQLITE_OK)
+	
+	if (db_manage.open(_game_db.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE))
 	{
 		stringstream ss;
 		ss << "ATTACH DATABASE '" << _user_db << "' AS db_player_data";
 		
-		if (connect_manage.exec_noquery(ss.str().data()))
+		if (db_manage.exec_noquery(ss.str().data()))
 		{
 			return init_database_struct();
 		}
 
-		connect_manage.close();
-		connect = nullptr;
+		db_manage.close();
 	}
 
 	return false;
@@ -76,13 +70,12 @@ bool mp::init_database_struct()
 	//创建玩家背包表
 	sql << "CREATE TABLE IF NOT EXISTS db_player_data.player_items (player_item_id INTEGER PRIMARY KEY AUTOINCREMENT,player_id INTEGER,item_id INTEGER,amount INTEGER,position_weight INTEGER);";
 
-	bool exec_status = connect_manage.exec_noquery(sql.str().data());
+	bool exec_status = db_manage.exec_noquery(sql.str().data());
 	if (!exec_status)
 	{
-		log(log::error, "core-basic", "init_database") << "初始化数据库结构失败:" << sqlite3_errmsg(mp::connect) << log::push;
+		log(log::error, "core-basic", "init_database") << "初始化数据库结构失败:" << db_manage.errstr() << log::push;
 		app_info.status_runtime = false;
-		connect_manage.close();
-		connect = nullptr;
+		db_manage.close();
 	}
 	else
 	{

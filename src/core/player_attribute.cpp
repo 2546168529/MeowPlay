@@ -22,7 +22,7 @@ inline __dt read_player_attribute(int64_t _player_id, const __pro _properties, c
 	if (mp::app_info.status_ban_read_database)
 		return result;
 
-	mp::database::stmt stmt = mp::connect_manage.prepare(
+	mp::database::stmt stmt = mp::db_manage.prepare(
 		"SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
 		{"@player_id", "@attribute_name"}, 
 		_player_id, _properties);
@@ -41,7 +41,7 @@ inline __dt read_player_attribute(int64_t _player_id, const __pro _properties, c
 	else
 	{
 		/* sqlite3_prepare_v2失败，应输出日志 */
-		mp::log(mp::log::error, "player_attribute", "read_player_attribute_int32") << "查询ID为" << _player_id << "的玩家的" << _properties << "属性时发生错误：" << mp::connect_manage.errstr() << mp::log::push;
+		mp::log(mp::log::error, "player_attribute", "read_player_attribute_int32") << "查询ID为" << _player_id << "的玩家的" << _properties << "属性时发生错误：" << mp::db_manage.errstr() << mp::log::push;
 	}
 
 	return result;
@@ -67,7 +67,7 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 	mp::lock_write.lock();
 	bool status_flag = false;
 
-	mp::database::stmt quer_stmt = mp::connect_manage.prepare(
+	mp::database::stmt quer_stmt = mp::db_manage.prepare(
 		"SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
 		{"@player_id", "@attribute_name"}, 
 		_player_id, _properties);
@@ -87,17 +87,17 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 			exec_sql = "INSERT INTO db_player_data.player_attribute(player_id, attribute_name, attribute_value) VALUES (@player_id, @attribute_name, @attribute_value)";
 		}
 		
-		status_flag = mp::connect_manage.exec_noquery(exec_sql, {"@player_id", "@attribute_name", "@attribute_value"}, _player_id, _properties, _data);
+		status_flag = mp::db_manage.exec_noquery(exec_sql, {"@player_id", "@attribute_name", "@attribute_value"}, _player_id, _properties, _data);
 		if (!status_flag)
 		{
-			mp::log(mp::log::error, "player_attribute", "read_player_attribute_text") << "写入ID为" << _player_id << "的玩家的" << _properties << "属性时在进行读写操作时发生错误：" << sqlite3_errmsg(mp::connect) << mp::log::push;
+			mp::log(mp::log::error, "player_attribute", "read_player_attribute_text") << "写入ID为" << _player_id << "的玩家的" << _properties << "属性时在进行读写操作时发生错误：" << mp::db_manage.errstr() << mp::log::push;
 		}
 	}
 	else
 	{
 		/* 准备查询语句失败，应输出日志 */
 		status_flag = false;
-		mp::log(mp::log::error, "player_attribute", "read_player_attribute_text") << "写入ID为" << _player_id << "的玩家的" << _properties << "属性时在查询该玩家指定属性是否存在时发生错误：" << sqlite3_errmsg(mp::connect) << mp::log::push;
+		mp::log(mp::log::error, "player_attribute", "read_player_attribute_text") << "写入ID为" << _player_id << "的玩家的" << _properties << "属性时在查询该玩家指定属性是否存在时发生错误：" << mp::db_manage.errstr() << mp::log::push;
 	}
 
 	mp::lock_write.unlock();

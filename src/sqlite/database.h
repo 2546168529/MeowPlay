@@ -234,12 +234,26 @@ namespace mp {
 		private:
 			sqlite3* m_connect;
 			int m_last_error;
+			size_t* m_use;
+
+			void free();
 
 		public:
-			manage() : m_connect(nullptr) {};
-			manage(sqlite3* _connect) : m_connect(_connect) {};
-			~manage() { close(); }
+			manage() : manage(nullptr) {}
 
+			manage(sqlite3* _connect) 
+				: m_connect(_connect), m_use(new size_t(1)), m_last_error(0) {};
+
+			manage(const manage& _manage) noexcept;
+			manage(manage&& _manage) noexcept;
+
+			manage& operator=(const manage& _manage) noexcept;
+			manage& operator=(manage&& _manage) noexcept;
+
+			~manage();
+
+			bool open(const char* _filename, int _flag);
+			
 			bool exec_noquery(const char* _sql);
 
 			template<class... __args>

@@ -48,6 +48,9 @@ mp::database::stmt& mp::database::stmt::operator=(stmt&& _stmt) noexcept
 		this->m_open_success = _stmt.m_open_success;
 		this->m_last_error = _stmt.m_last_error;
 		this->m_stmt = _stmt.m_stmt;
+
+		_stmt.m_use = nullptr;
+		_stmt.m_stmt = nullptr;
 	}
 	return *this;
 }
@@ -116,6 +119,83 @@ bool mp::database::stmt::reset()
 		return false;
 	}
 	return true;
+}
+
+mp::database::manage::manage(const manage& _manage) noexcept
+{
+	++* _manage.m_use;
+	this->m_use = _manage.m_use;
+	this->m_last_error = _manage.m_last_error;
+	this->m_connect = _manage.m_connect;
+}
+
+mp::database::manage::manage(manage&& _manage) noexcept
+	: m_use(_manage.m_use), m_connect(_manage.m_connect), m_last_error(_manage.m_last_error)
+{
+	_manage.m_use = nullptr;
+	_manage.m_connect = nullptr;
+}
+
+mp::database::manage& mp::database::manage::operator=(const manage& _manage) noexcept
+{
+	++* _manage.m_use;
+	this->free();
+	this->m_use = _manage.m_use;
+	this->m_last_error = _manage.m_last_error;
+	this->m_connect = _manage.m_connect;
+}
+
+mp::database::manage& mp::database::manage::operator=(manage&& _manage) noexcept
+{
+
+	if(this != &_manage)
+	{
+		this->free();
+
+		this->m_use = _manage.m_use;
+		this->m_last_error = _manage.m_last_error;
+		this->m_connect = _manage.m_connect;
+
+		_manage.m_use = nullptr;
+		_manage.m_connect = nullptr;
+	}
+
+	return *this;
+}
+
+mp::database::manage::~manage()
+{
+	this->free();
+}
+
+/**
+** 打开数据库
+** @param _filename 将要打开的数据库文件路径
+** @param _flag 数据库打开方式
+** @return 是否成功打开数据库
+*/
+bool mp::database::manage::open(const char* _filename, int _flag)
+{
+	int rc = sqlite3_open_v2(_filename, &this->m_connect, _flag, nullptr);
+	if (!(rc == SQLITE_OK))
+	{
+		m_last_error = rc;
+		return false;
+	}			
+	return true;
+}
+
+/**
+** 释放资源 
+** 每次调用，use计数递减1，若use为0，则释放资源
+*/
+void mp::database::manage::free()
+{
+	if (this->m_use != nullptr && -- * (this->m_use) == 0)
+	{
+		delete this->m_use;
+		this->close();
+	}	
 }
 
 /**

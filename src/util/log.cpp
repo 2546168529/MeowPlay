@@ -31,11 +31,40 @@ mp::log& mp::log::operator<<(std::string _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
+mp::log& mp::log::operator<<(int32_t _msg)
+{
+    this->m_msg.append(std::to_string(_msg));
+    return *this;
+}
+
+/**
+** 填入日志内容，但不立即输出
+** @param _msg 将要填入的内容 */
+mp::log& mp::log::operator<<(uint32_t _msg)
+{
+    this->m_msg.append(std::to_string(_msg));
+    return *this;
+}
+
+/**
+** 填入日志内容，但不立即输出
+** @param _msg 将要填入的内容 */
 mp::log& mp::log::operator<<(int64_t _msg)
 {
     this->m_msg.append(std::to_string(_msg));
     return *this;
 }
+
+/**
+** 填入日志内容，但不立即输出
+** @param _msg 将要填入的内容 */
+mp::log& mp::log::operator<<(uint64_t _msg)
+{
+    this->m_msg.append(std::to_string(_msg));
+    return *this;
+}
+
+
 
 /**
 ** 填入日志内容，但不立即输出

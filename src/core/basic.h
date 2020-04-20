@@ -1,6 +1,8 @@
 #pragma once
 
+#include <thread>
 #include <mutex>
+
 #include <inttypes.h>
 #include <string>
 #include <atomic>
@@ -24,10 +26,18 @@ namespace mp {
 		std::atomic_bool status_ban_write_database = false;
 	};
 	extern app_info_struct app_info;
+
+	//通用查询结果
+	enum query_result{
+		success,	//成功
+		nonexistent,//不存在
+		error,		//出错
+		ban			//禁止操作
+	};
 	
 	extern const std::string nullstr;
 
-	extern std::mutex lock_write;
+	extern std::recursive_mutex lock_write;
 	extern mp::database::manage db_manage;
 
 	bool init_database(std::string _game_db, std::string _user_db);

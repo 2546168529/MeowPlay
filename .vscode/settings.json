@@ -52,7 +52,9 @@
         "vector": "cpp",
         "xhash": "cpp",
         "atomic": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "map": "cpp",
+        "xtree": "cpp"
     },
     "cmake.configureOnOpen": true,
 

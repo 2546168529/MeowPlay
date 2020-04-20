@@ -35,6 +35,9 @@ namespace mp {
         log& operator<<(const char* _msg);
         log& operator<<(std::string _msg);
         log& operator<<(int64_t _msg);
+        log& operator<<(uint64_t _msg);
+        log& operator<<(int32_t _msg);
+        log& operator<<(uint32_t _msg);
         log& operator<<(double _msg);
         log& operator<<(SOP _op);
     };

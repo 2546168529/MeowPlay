@@ -10,7 +10,7 @@ mp::app_info_struct mp::app_info;
 ** 主要用途：
 ** 绝对避免在事务处理时进行其他写操作
 ** 绝对避免同时发生写入操作 */
-std::mutex mp::lock_write;
+std::recursive_mutex mp::lock_write;
 
 /*
 ** SQLITE数据库连接句柄

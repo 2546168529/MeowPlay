@@ -28,14 +28,15 @@ inline __dt read_player_attribute(int64_t _player_id, const __pro _properties, c
 		_player_id, _properties);
 	if (stmt.open_success())
 	{
-		if (stmt.step() == SQLITE_ROW)
+		int rc = stmt.step();
+		if (rc == SQLITE_ROW)
 		{
 			stmt.column(0, result);
 		}
-		else
+		else if(rc != SQLITE_DONE)
 		{
-			/* 未查找到记录，应输出日志 */
-			mp::log(mp::log::wran, "player_attribute", "read_player_attribute_int32") << "查询ID为" << _player_id << "的玩家的" << _properties << "属性时发现该玩家没有这个属性的记录" << mp::log::push;
+			/* 执行发生错误 */
+			mp::log(mp::log::error, "player_attribute", "read_player_attribute_int32") << "查询ID为" << _player_id << "的玩家的" << _properties << "属性时在执行步骤发生错误，rc=" << rc << mp::log::push;
 		}
 	}
 	else
@@ -63,8 +64,9 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 	/* 若程序当前状态为禁止写数据库，取消操作 */
 	if (mp::app_info.status_ban_write_database)
 		return false;
+	/* 自动加锁 */
+    std::lock_guard<std::recursive_mutex> lock(mp::lock_write);
 
-	mp::lock_write.lock();
 	bool status_flag = false;
 
 	mp::database::stmt quer_stmt = mp::db_manage.prepare(
@@ -76,15 +78,22 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 	{
 
 		const char *exec_sql;
-		if (quer_stmt.step() == SQLITE_ROW)
+		int rc = quer_stmt.step();
+		if (rc == SQLITE_ROW)
 		{
 			/* 查找到记录，执行修改操作 */
 			exec_sql = "UPDATE db_play_data.player_attribute SET attribute_value = @attribute_value WHERE player_id = @player_id AND attribute_name = @attribute_name";
 		}
-		else
+		else if(rc == SQLITE_DONE)
 		{
 			/* 未查找到记录，执行插入操作 */
 			exec_sql = "INSERT INTO db_play_data.player_attribute(player_id, attribute_name, attribute_value) VALUES (@player_id, @attribute_name, @attribute_value)";
+		}
+		else
+		{
+			/* 查询操作执行失败 */
+			mp::log(mp::log::error, "player_attribute", "read_player_attribute_text") << "写入ID为" << _player_id << "的玩家的" << _properties << "属性时在执行查询步骤发生错误，rc=" << rc << mp::log::push;
+			return false;
 		}
 		
 		status_flag = mp::db_manage.exec_noquery(exec_sql, {"@player_id", "@attribute_name", "@attribute_value"}, _player_id, _properties, _data);
@@ -100,7 +109,6 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 		mp::log(mp::log::error, "player_attribute", "read_player_attribute_text") << "写入ID为" << _player_id << "的玩家的" << _properties << "属性时在查询该玩家指定属性是否存在时发生错误：" << mp::db_manage.errstr() << mp::log::push;
 	}
 
-	mp::lock_write.unlock();
 	return status_flag;
 }
 

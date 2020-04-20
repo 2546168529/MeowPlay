@@ -15,6 +15,8 @@ namespace mp {
 			size_t* m_use;
 
 			/******* 根据索引的参数绑定 Begin *******/
+
+			//根据索引绑定带符号的int32数据
 			template<class... __args>
 			bool bind_recur(int _which, const int32_t& _value, const __args&... _args)
 			{
@@ -27,6 +29,7 @@ namespace mp {
 				return this->bind_recur(_which + 1, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据索引绑定带符号的int64数据
 			template<class... __args>
 			bool bind_recur(int _which, const int64_t& _value, const __args&... _args)
 			{
@@ -39,6 +42,34 @@ namespace mp {
 				return this->bind_recur(_which + 1, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据索引绑定无符号的int32数据
+			template<class... __args>
+			bool bind_recur(int _which, const uint32_t& _value, const __args&... _args)
+			{
+				int rc = sqlite3_bind_int64(this->m_stmt, _which, static_cast<int64_t>(_value));
+				if (rc != SQLITE_OK)
+				{
+					this->m_last_error = rc;
+					return false;
+				}
+				return this->bind_recur(_which + 1, std::forward<decltype(_args)>(_args)...);
+			}
+
+			//根据索引绑定无符号的int64数据
+			template<class... __args>
+			bool bind_recur(int _which, const uint64_t& _value, const __args&... _args)
+			{
+				std::string temp = std::to_string(_value);//由于sqlite3无法直接保存uint64型数据，所以需要先转换为字符串型数据保存
+				int rc = sqlite3_bind_text(this->m_stmt, _which, temp.data(), -1, SQLITE_TRANSIENT);
+				if (rc != SQLITE_OK)
+				{
+					this->m_last_error = rc;
+					return false;
+				}
+				return this->bind_recur(_which + 1, std::forward<decltype(_args)>(_args)...);
+			}
+
+			//根据索引绑定double型数据
 			template<class... __args>
 			bool bind_recur(int _which, const double& _value, const __args&... _args)
 			{
@@ -51,6 +82,7 @@ namespace mp {
 				return this->bind_recur(_which + 1, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据索引绑定字符串型数据
 			template<class... __args>
 			bool bind_recur(int _which, const std::string& _value, const __args&... _args)
 			{
@@ -63,6 +95,7 @@ namespace mp {
 				return this->bind_recur(_which + 1, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据索引绑定C型字符串型数据
 			template<class... __args>
 			bool bind_recur(int _which, const char*& _value, const __args&... _args)
 			{
@@ -81,6 +114,8 @@ namespace mp {
 			/******* 根据索引的参数绑定 End *******/
 
 			/******* 根据名称的参数绑定 Begin*******/
+
+			//根据参数名称绑定带符号的int32数据
 			template<class... __args>
 			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const int32_t& _value, const __args&... _args)
 			{
@@ -94,6 +129,7 @@ namespace mp {
 				return this->bind_recur_name(_which + 1, _param_name, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据参数名称绑定带符号的int64数据
 			template<class... __args>
 			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const int64_t& _value, const __args&... _args)
 			{
@@ -107,6 +143,36 @@ namespace mp {
 				return this->bind_recur_name(_which + 1, _param_name, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据参数名称绑定无符号的int32数据
+			template<class... __args>
+			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const uint32_t& _value, const __args&... _args)
+			{
+				if (_param_name.size() == _which) return true;
+				int rc = sqlite3_bind_int64(this->m_stmt, sqlite3_bind_parameter_index(this->m_stmt, *(_param_name.begin() + _which)), static_cast<int64_t>(_value));
+				if (rc != SQLITE_OK)
+				{
+					this->m_last_error = rc;
+					return false;
+				}
+				return this->bind_recur_name(_which + 1, _param_name, std::forward<decltype(_args)>(_args)...);
+			}
+
+			//根据参数名称绑定无符号的int64数据
+			template<class... __args>
+			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const uint64_t& _value, const __args&... _args)
+			{
+				if (_param_name.size() == _which) return true;
+				std::string temp = std::to_string(_value);//由于sqlite3无法直接保存uint64型数据，所以需要转换为字符串保存
+				int rc = sqlite3_bind_text(this->m_stmt, sqlite3_bind_parameter_index(this->m_stmt, *(_param_name.begin() + _which)), temp.data(), -1, SQLITE_TRANSIENT);
+				if (rc != SQLITE_OK)
+				{
+					this->m_last_error = rc;
+					return false;
+				}
+				return this->bind_recur_name(_which + 1, _param_name, std::forward<decltype(_args)>(_args)...);
+			}
+
+			//根据参数名称绑定double型数据
 			template<class... __args>
 			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const double& _value, const __args&... _args)
 			{
@@ -120,6 +186,7 @@ namespace mp {
 				return this->bind_recur_name(_which + 1, _param_name, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据参数名称绑定字符串型数据
 			template<class... __args>
 			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const std::string& _value, const __args&... _args)
 			{
@@ -133,6 +200,7 @@ namespace mp {
 				return this->bind_recur_name(_which + 1, _param_name, std::forward<decltype(_args)>(_args)...);
 			}
 
+			//根据参数名称绑定C型字符串数据
 			template<class... __args>
 			bool bind_recur_name(size_t _which, const std::initializer_list<const char*>& _param_name, const char*& _value, const __args&... _args)
 			{
@@ -197,6 +265,16 @@ namespace mp {
 			void column(int _iCol, int64_t& _nRec)
 			{
 				_nRec = sqlite3_column_int64(this->m_stmt, _iCol);
+			}
+
+			void column(int _iCol, uint32_t& _nRec)
+			{
+				_nRec = static_cast<uint32_t>(sqlite3_column_int64(this->m_stmt, _iCol));
+			}
+
+			void column(int _iCol, uint64_t& _nRec)
+			{
+				_nRec = atoll(reinterpret_cast<const char*>(sqlite3_column_text(this->m_stmt, _iCol)));
 			}
 
 			void column(int _iCol, double& _nRec)

@@ -12,7 +12,16 @@
 #include "../sqlite/database.h"
 
 namespace mp {
-	
+	typedef uint32_t Status;
+	constexpr uint32_t status_ok = 0;
+	constexpr uint32_t status_error = 1;
+	constexpr uint32_t status_nonexistent = 2;
+	constexpr uint32_t status_exist = 3;
+	constexpr uint32_t status_ban = 4;
+	constexpr uint32_t status_query_error = 5;
+	constexpr uint32_t status_exec_error = 6;
+	constexpr uint32_t status_begin_transaction_error = 7;
+
 	/*
 	** 程序信息结构
 	** 由于此结构将用于全局资源，所以成员必须需要原子操作 */
@@ -20,20 +29,8 @@ namespace mp {
 	{
 		//程序是否正在运行
 		std::atomic_bool status_runtime = false;
-		//是否禁止读数据库
-		std::atomic_bool status_ban_read_database = false;
-		//是否禁止写数据库
-		std::atomic_bool status_ban_write_database = false;
 	};
 	extern app_info_struct app_info;
-
-	//通用查询结果
-	enum query_result{
-		success,	//成功
-		nonexistent,//不存在
-		error,		//出错
-		ban			//禁止操作
-	};
 	
 	extern const std::string nullstr;
 

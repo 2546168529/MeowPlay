@@ -387,6 +387,10 @@ namespace mp {
 			sqlite3* connect_ptr();
 
 			sqlite3* connect_ptr(sqlite3* _connect);
+
+			bool begin_transaction();
+			bool end_transaction();
+			bool rollback_transaction();
 		};
 
 	}

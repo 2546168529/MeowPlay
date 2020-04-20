@@ -14,4 +14,5 @@ namespace mp {
         std::string base_info;
     };
 
+    mp::Status add_player_items(int64_t _player_id, uint32_t _item_base_id, int64_t _amount, int32_t _position, int32_t _position_weight, int64_t _time_limit);
 };

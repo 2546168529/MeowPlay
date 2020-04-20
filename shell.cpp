@@ -7,7 +7,7 @@ int main()
 {
     mp::init_database("data/basic.db", "data/player.db");
 
-    std::cout << (mp::write_player_attribute_text(2, "name", "²âÊÔ")?"Ğ´Èë³É¹¦":"Ğ´ÈëÊ§°Ü") << std::endl;
+    std::cout << (mp::write_player_attribute_text(2, "name", "²âÊÔ")==mp::status_ok?"Ğ´Èë³É¹¦":"Ğ´ÈëÊ§°Ü") << std::endl;
     
     std::cout << mp::read_player_attribute_text(2, "name", "") << std::endl;
 

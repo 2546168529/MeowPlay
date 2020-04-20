@@ -306,3 +306,26 @@ sqlite3* mp::database::manage::connect_ptr(sqlite3* _connect)
 	return bak;
 }
 
+/**
+** 开启事务处理
+*/
+bool mp::database::manage::begin_transaction()
+{
+	return this->exec_noquery("BEGIN TRANSACTION");
+}
+
+/**
+** 结束/提交事务处理
+*/
+bool mp::database::manage::end_transaction()
+{
+	return this->exec_noquery("END TRANSACTION");
+}
+
+/**
+** 回滚事务处理
+*/
+bool mp::database::manage::rollback_transaction()
+{
+	return this->exec_noquery("ROLLBACK");
+}

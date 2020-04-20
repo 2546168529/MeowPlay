@@ -3,7 +3,8 @@
 CC = g++
 CFLAGS = -std=c++17
 
-object = obj/shell.o obj/sqlite3.o obj/basic.o obj/player_attribute.o obj/log.o obj/math_exp.o obj/utility_str.o obj/database.o
+object = obj/shell.o obj/sqlite3.o obj/basic.o obj/player_attribute.o obj/log.o obj/math_exp.o obj/utility_str.o obj/database.o \
+		obj/json.o
 
 build: $(object)
 	$(CC) $(CFLAGS) $(object) -o shell
@@ -31,3 +32,6 @@ obj/sqlite3.o: src/sqlite/sqlite3.c
 
 obj/database.o: src/sqlite/database.cpp
 	$(CC) $(CFLAGS) -c src/sqlite/database.cpp -o $@
+
+obj/json.o: src/json/json11.cpp 
+	$(CC) $(CFLAGS) -c src/json/json11.cpp -o $@

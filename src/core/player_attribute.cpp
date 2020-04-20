@@ -23,7 +23,7 @@ inline __dt read_player_attribute(int64_t _player_id, const __pro _properties, c
 		return result;
 
 	mp::database::stmt stmt = mp::db_manage.prepare(
-		"SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
+		"SELECT attribute_value FROM db_play_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
 		{"@player_id", "@attribute_name"}, 
 		_player_id, _properties);
 	if (stmt.open_success())
@@ -68,7 +68,7 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 	bool status_flag = false;
 
 	mp::database::stmt quer_stmt = mp::db_manage.prepare(
-		"SELECT attribute_value FROM db_player_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
+		"SELECT attribute_value FROM db_play_data.player_attribute WHERE player_id=@player_id AND attribute_name=@attribute_name LIMIT 1", 
 		{"@player_id", "@attribute_name"}, 
 		_player_id, _properties);
 
@@ -79,12 +79,12 @@ inline bool write_player_attribute(int64_t _player_id, const __pro _properties, 
 		if (quer_stmt.step() == SQLITE_ROW)
 		{
 			/* 查找到记录，执行修改操作 */
-			exec_sql = "UPDATE db_player_data.player_attribute SET attribute_value = @attribute_value WHERE player_id = @player_id AND attribute_name = @attribute_name";
+			exec_sql = "UPDATE db_play_data.player_attribute SET attribute_value = @attribute_value WHERE player_id = @player_id AND attribute_name = @attribute_name";
 		}
 		else
 		{
 			/* 未查找到记录，执行插入操作 */
-			exec_sql = "INSERT INTO db_player_data.player_attribute(player_id, attribute_name, attribute_value) VALUES (@player_id, @attribute_name, @attribute_value)";
+			exec_sql = "INSERT INTO db_play_data.player_attribute(player_id, attribute_name, attribute_value) VALUES (@player_id, @attribute_name, @attribute_value)";
 		}
 		
 		status_flag = mp::db_manage.exec_noquery(exec_sql, {"@player_id", "@attribute_name", "@attribute_value"}, _player_id, _properties, _data);

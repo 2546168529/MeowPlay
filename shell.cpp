@@ -4,7 +4,7 @@
 
 int main()
 {
-    mp::init_database("data/game.db", "data/player_data.db");
+    mp::init_database("data/basic.db", "data/player.db");
 
     std::cout << (mp::write_player_attribute_text(2, "name", "Hello Meow!!!!!")?"写入成功":"写入失败") << std::endl;
     

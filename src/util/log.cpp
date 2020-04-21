@@ -4,7 +4,7 @@
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(char _msg)
+mp::log &mp::log::operator<<(char _msg)
 {
     this->m_msg.append(1, _msg);
     return *this;
@@ -13,7 +13,7 @@ mp::log& mp::log::operator<<(char _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(const char* _msg)
+mp::log &mp::log::operator<<(const char *_msg)
 {
     this->m_msg.append(_msg);
     return *this;
@@ -22,7 +22,7 @@ mp::log& mp::log::operator<<(const char* _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(std::string _msg)
+mp::log &mp::log::operator<<(std::string _msg)
 {
     this->m_msg.append(_msg);
     return *this;
@@ -31,7 +31,7 @@ mp::log& mp::log::operator<<(std::string _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(int32_t _msg)
+mp::log &mp::log::operator<<(int32_t _msg)
 {
     this->m_msg.append(std::to_string(_msg));
     return *this;
@@ -40,7 +40,7 @@ mp::log& mp::log::operator<<(int32_t _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(uint32_t _msg)
+mp::log &mp::log::operator<<(uint32_t _msg)
 {
     this->m_msg.append(std::to_string(_msg));
     return *this;
@@ -49,7 +49,7 @@ mp::log& mp::log::operator<<(uint32_t _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(int64_t _msg)
+mp::log &mp::log::operator<<(int64_t _msg)
 {
     this->m_msg.append(std::to_string(_msg));
     return *this;
@@ -58,18 +58,16 @@ mp::log& mp::log::operator<<(int64_t _msg)
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(uint64_t _msg)
+mp::log &mp::log::operator<<(uint64_t _msg)
 {
     this->m_msg.append(std::to_string(_msg));
     return *this;
 }
 
-
-
 /**
 ** 填入日志内容，但不立即输出
 ** @param _msg 将要填入的内容 */
-mp::log& mp::log::operator<<(double _msg)
+mp::log &mp::log::operator<<(double _msg)
 {
     this->m_msg.append(std::to_string(_msg));
     return *this;
@@ -79,14 +77,14 @@ mp::log& mp::log::operator<<(double _msg)
 ** 日志操作
 ** @param _op 操作类型
 ** 若_op为push，则表示立即输出日志 */
-mp::log& mp::log::operator<<(SOP _op)
+mp::log &mp::log::operator<<(SOP _op)
 {
     switch (_op)
     {
     case SOP::push:
         this->_push();
         break;
-    
+
     case SOP::clear:
         this->_clear();
         break;
@@ -94,7 +92,7 @@ mp::log& mp::log::operator<<(SOP _op)
     default:
         break;
     }
-    
+
     return *this;
 }
 
@@ -108,23 +106,22 @@ void mp::log::_push()
     case info:
         std::cout << "[info] ";
         break;
-    
+
     case wran:
         std::cout << "[wran] ";
         break;
-    
+
     case error:
         std::cout << "[error] ";
         break;
-    
+
     default:
         break;
     }
 
-    std::cout << "["  << this->m_from << "] [" << this->m_title << "] ";
+    std::cout << "[" << this->m_from << "] [" << this->m_title << "] ";
     std::cout << this->m_msg << std::endl;
     this->_clear();
-    
 }
 
 /**

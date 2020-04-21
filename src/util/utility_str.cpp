@@ -2,9 +2,9 @@
 
 #include <string.h>
 
-size_t* KMP_MakeNext(const char* substr, size_t len, bool optimize)
+size_t *KMP_MakeNext(const char *substr, size_t len, bool optimize)
 {
-	size_t* next = new size_t[len];
+	size_t *next = new size_t[len];
 	next[0] = mp::utility_str::npos;
 
 	size_t j = 0;
@@ -34,7 +34,6 @@ size_t* KMP_MakeNext(const char* substr, size_t len, bool optimize)
 			{
 				next[j] = k;
 			}
-
 		}
 		else
 		{
@@ -45,13 +44,14 @@ size_t* KMP_MakeNext(const char* substr, size_t len, bool optimize)
 	return next;
 }
 
-size_t mp::utility_str::KMP_Find(const char* findstr, const char* substr)
+size_t mp::utility_str::KMP_Find(const char *findstr, const char *substr)
 {
 	size_t find_len = strlen(findstr), subs_len = strlen(substr);
 
-	if (subs_len == 0 || find_len < subs_len) return mp::utility_str::npos;
+	if (subs_len == 0 || find_len < subs_len)
+		return mp::utility_str::npos;
 
-	size_t* next = KMP_MakeNext(substr, subs_len, true);
+	size_t *next = KMP_MakeNext(substr, subs_len, true);
 
 	size_t j = 0, k = 0;
 	while (j < find_len && (k == npos || k < subs_len))
@@ -59,7 +59,7 @@ size_t mp::utility_str::KMP_Find(const char* findstr, const char* substr)
 
 		if (k == npos || findstr[j] == substr[k])
 		{
-			//指示后移，或匹配成功 
+			//指示后移，或匹配成功
 			++j;
 
 			if (k == npos)
@@ -70,13 +70,11 @@ size_t mp::utility_str::KMP_Find(const char* findstr, const char* substr)
 			{
 				++k;
 			}
-
 		}
 		else
 		{
 			k = next[k];
 		}
-
 	}
 
 	delete[] next;
@@ -89,16 +87,16 @@ size_t mp::utility_str::KMP_Find(const char* findstr, const char* substr)
 	{
 		return npos;
 	}
-
 }
 
-size_t mp::utility_str::KMP_Find_Count(const char* findstr, const char* substr)
+size_t mp::utility_str::KMP_Find_Count(const char *findstr, const char *substr)
 {
 	size_t find_len = strlen(findstr), subs_len = strlen(substr);
 
-	if (subs_len == 0 || find_len < subs_len) return 0;
+	if (subs_len == 0 || find_len < subs_len)
+		return 0;
 
-	size_t* next = KMP_MakeNext(substr, subs_len, false);
+	size_t *next = KMP_MakeNext(substr, subs_len, false);
 
 	size_t count = 0;
 
@@ -108,7 +106,7 @@ size_t mp::utility_str::KMP_Find_Count(const char* findstr, const char* substr)
 
 		if (k == npos || findstr[j] == substr[k])
 		{
-			//指示后移，或匹配成功 
+			//指示后移，或匹配成功
 			++j;
 
 			if (k == npos)
@@ -122,7 +120,7 @@ size_t mp::utility_str::KMP_Find_Count(const char* findstr, const char* substr)
 
 			if (k == subs_len)
 			{
-				//子串匹配成功，计数+1，并回溯到匹配成功的位置，继续匹配 
+				//子串匹配成功，计数+1，并回溯到匹配成功的位置，继续匹配
 				++count;
 				k = next[k - 1];
 				--j;
@@ -132,12 +130,9 @@ size_t mp::utility_str::KMP_Find_Count(const char* findstr, const char* substr)
 		{
 			k = next[k];
 		}
-
 	}
 
 	delete[] next;
 
 	return count;
 }
-
-

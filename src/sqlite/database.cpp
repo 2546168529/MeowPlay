@@ -1,17 +1,16 @@
 #include "database.h"
 #include <iostream>
 
-mp::database::stmt::stmt(sqlite3* _connect, const char* sql)
+mp::database::stmt::stmt(sqlite3 *_connect, const char *sql)
 	: m_use(new size_t(1))
 {
-	const char* tail;
+	const char *tail;
 	int rc = sqlite3_prepare_v2(_connect, sql, -1, &this->m_stmt, &tail);
 	this->m_last_error = rc;
 	m_open_success = (rc == SQLITE_OK);
-
 }
 
-mp::database::stmt::stmt(const stmt& _stmt) noexcept
+mp::database::stmt::stmt(const stmt &_stmt) noexcept
 {
 	m_use = _stmt.m_use;
 	(*this->m_use)++;
@@ -21,9 +20,9 @@ mp::database::stmt::stmt(const stmt& _stmt) noexcept
 	this->m_stmt = _stmt.m_stmt;
 }
 
-mp::database::stmt& mp::database::stmt::operator=(const stmt& _stmt) noexcept
+mp::database::stmt &mp::database::stmt::operator=(const stmt &_stmt) noexcept
 {
-	++* _stmt.m_use;//先将传入的stmt的所用记次+1，避免自赋值造成的异常
+	++*_stmt.m_use; //先将传入的stmt的所用记次+1，避免自赋值造成的异常
 
 	free();
 
@@ -38,7 +37,7 @@ mp::database::stmt::~stmt()
 	this->free();
 }
 
-mp::database::stmt& mp::database::stmt::operator=(stmt&& _stmt) noexcept
+mp::database::stmt &mp::database::stmt::operator=(stmt &&_stmt) noexcept
 {
 	if (this != &_stmt)
 	{
@@ -55,7 +54,7 @@ mp::database::stmt& mp::database::stmt::operator=(stmt&& _stmt) noexcept
 	return *this;
 }
 
-mp::database::stmt::stmt(stmt&& _stmt) noexcept
+mp::database::stmt::stmt(stmt &&_stmt) noexcept
 	: m_stmt(_stmt.m_stmt), m_use(_stmt.m_use), m_last_error(_stmt.m_last_error), m_open_success(_stmt.m_open_success)
 {
 	_stmt.m_use = nullptr;
@@ -68,11 +67,11 @@ mp::database::stmt::stmt(stmt&& _stmt) noexcept
 */
 void mp::database::stmt::free()
 {
-	if (this->m_use != nullptr && -- * (this->m_use) == 0)
+	if (this->m_use != nullptr && --*(this->m_use) == 0)
 	{
 		delete this->m_use;
 		this->finalize();
-		this->m_use = nullptr;	
+		this->m_use = nullptr;
 	}
 }
 
@@ -121,34 +120,34 @@ bool mp::database::stmt::reset()
 	return true;
 }
 
-mp::database::manage::manage(const manage& _manage) noexcept
+mp::database::manage::manage(const manage &_manage) noexcept
 {
-	++* _manage.m_use;
+	++*_manage.m_use;
 	this->m_use = _manage.m_use;
 	this->m_last_error = _manage.m_last_error;
 	this->m_connect = _manage.m_connect;
 }
 
-mp::database::manage::manage(manage&& _manage) noexcept
+mp::database::manage::manage(manage &&_manage) noexcept
 	: m_use(_manage.m_use), m_connect(_manage.m_connect), m_last_error(_manage.m_last_error)
 {
 	_manage.m_use = nullptr;
 	_manage.m_connect = nullptr;
 }
 
-mp::database::manage& mp::database::manage::operator=(const manage& _manage) noexcept
+mp::database::manage &mp::database::manage::operator=(const manage &_manage) noexcept
 {
-	++* _manage.m_use;
+	++*_manage.m_use;
 	this->free();
 	this->m_use = _manage.m_use;
 	this->m_last_error = _manage.m_last_error;
 	this->m_connect = _manage.m_connect;
 }
 
-mp::database::manage& mp::database::manage::operator=(manage&& _manage) noexcept
+mp::database::manage &mp::database::manage::operator=(manage &&_manage) noexcept
 {
 
-	if(this != &_manage)
+	if (this != &_manage)
 	{
 		this->free();
 
@@ -174,14 +173,14 @@ mp::database::manage::~manage()
 ** @param _flag 数据库打开方式
 ** @return 是否成功打开数据库
 */
-bool mp::database::manage::open(const char* _filename, int _flag)
+bool mp::database::manage::open(const char *_filename, int _flag)
 {
 	int rc = sqlite3_open_v2(_filename, &this->m_connect, _flag, nullptr);
 	if (!(rc == SQLITE_OK))
 	{
 		m_last_error = rc;
 		return false;
-	}			
+	}
 	return true;
 }
 
@@ -191,11 +190,11 @@ bool mp::database::manage::open(const char* _filename, int _flag)
 */
 void mp::database::manage::free()
 {
-	if (this->m_use != nullptr && -- * (this->m_use) == 0)
+	if (this->m_use != nullptr && --*(this->m_use) == 0)
 	{
 		delete this->m_use;
 		this->close();
-	}	
+	}
 }
 
 /**
@@ -203,12 +202,13 @@ void mp::database::manage::free()
 ** @param _sql sql语句（不能用此方法执行查询语句）
 ** @return 成功返回true，若执行失败，返回false，可通过last_error获得错误代码
 */
-bool mp::database::manage::exec_noquery(const char* _sql)
+bool mp::database::manage::exec_noquery(const char *_sql)
 {
-	char* pchar_err_message = nullptr;
-	int rc = sqlite3_exec(this->m_connect,
+	char *pchar_err_message = nullptr;
+	int rc = sqlite3_exec(
+		this->m_connect,
 		_sql,
-		[](void* data, int argc, char** argv, char** azColName) -> int { return SQLITE_OK; },
+		[](void *data, int argc, char **argv, char **azColName) -> int { return SQLITE_OK; },
 		nullptr,
 		&pchar_err_message);
 	if (rc != SQLITE_OK)
@@ -224,7 +224,7 @@ bool mp::database::manage::exec_noquery(const char* _sql)
 ** @param _sql sql语句
 ** @return stmt，可通过stmt.open_success()来判断sql是否准备成功
 */
-mp::database::stmt mp::database::manage::prepare(const char* _sql)
+mp::database::stmt mp::database::manage::prepare(const char *_sql)
 {
 	return stmt(this->m_connect, _sql);
 }
@@ -252,7 +252,7 @@ bool mp::database::manage::close()
 ** 获取最后的错误代码
 ** @return 错误代码
 */
-int mp::database::manage::last_error()
+int mp::database::manage::last_error() const
 {
 	return this->m_last_error;
 }
@@ -261,7 +261,7 @@ int mp::database::manage::last_error()
 ** 获取错误信息
 ** @return 错误信息（无需释放指针）
 */
-const char* mp::database::manage::errmsg()
+const char *mp::database::manage::errmsg() const
 {
 	return sqlite3_errmsg(this->m_connect);
 }
@@ -270,7 +270,7 @@ const char* mp::database::manage::errmsg()
 ** 获取最后的错误描述
 ** @return 错误描述（无需释放指针）
 */
-const char* mp::database::manage::errstr()
+const char *mp::database::manage::errstr() const
 {
 	return sqlite3_errstr(this->m_last_error);
 }
@@ -280,7 +280,7 @@ const char* mp::database::manage::errstr()
 ** @param _rc 错误代码
 ** @return 错误描述（无需释放指针）
 */
-const char* mp::database::manage::errstr(int _rc)
+const char *mp::database::manage::errstr(int _rc) const
 {
 	return sqlite3_errstr(_rc);
 }
@@ -289,7 +289,7 @@ const char* mp::database::manage::errstr(int _rc)
 ** 获取当前管理的数据库连接指针
 ** @return sqlite3指针
 */
-sqlite3* mp::database::manage::connect_ptr()
+sqlite3 *mp::database::manage::connect_ptr() const
 {
 	return this->m_connect;
 }
@@ -299,9 +299,9 @@ sqlite3* mp::database::manage::connect_ptr()
 ** @param _connect 将要更换的数据库指针
 ** @return 旧的数据库指针
 */
-sqlite3* mp::database::manage::connect_ptr(sqlite3* _connect)
+sqlite3 *mp::database::manage::connect_ptr(sqlite3 *_connect)
 {
-	sqlite3* bak = this->m_connect;
+	sqlite3 *bak = this->m_connect;
 	this->m_connect = _connect;
 	return bak;
 }

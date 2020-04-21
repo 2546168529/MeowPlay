@@ -7,9 +7,10 @@ int main()
 {
     mp::init_database("data/basic.db", "data/player.db");
 
-    std::cout << (mp::write_player_attribute_text(2, "name", "²âÊÔ")==mp::status_ok?"Ğ´Èë³É¹¦":"Ğ´ÈëÊ§°Ü") << std::endl;
+    // std::cout << (mp::write_player_attribute_text(2, "name", "²âÊÔ")==mp::status_ok?"Ğ´Èë³É¹¦":"Ğ´ÈëÊ§°Ü") << std::endl;
     
-    std::cout << mp::read_player_attribute_text(2, "name", "") << std::endl;
+    // std::cout << mp::read_player_attribute_text(2, "name", "") << std::endl;
+    std::cout << mp::add_player_items(1, 1, 3, 1, 1, 10) << std::endl;
 
     system("pause");
     return 0;

@@ -1,4 +1,3 @@
 #pragma one
 
-double calculate_expr(const char* _expr);
-
+double calculate_expr(const char *_expr);

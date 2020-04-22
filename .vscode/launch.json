@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "g++.exe - 生成和调试活动文件",
+            "name": "make-shell",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\shell.exe",
+            "program": "${workspaceRoot}\\shell.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -24,7 +24,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "make_shell",
+            "preLaunchTask": "make-shell",
             
         }
     ]

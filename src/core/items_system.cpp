@@ -9,7 +9,7 @@
 ** @param _read_result 读取结果
 ** @return Status mp::status_ok 成功、mp::status_ban 被禁止使用、mp::status_error 错误、mp::status_nonexistent 不存在
 */
-mp::Status read_base_items(uint32_t _item_base_id, mp::BaseItemsInfo &_read_result)
+mp::Status mp::read_base_items(uint32_t _item_base_id, mp::BaseItemsInfo &_read_result)
 {
     /* 若程序非运行状态，取消操作 */
     if (!mp::app_info.status_runtime)
@@ -53,7 +53,7 @@ mp::Status read_base_items(uint32_t _item_base_id, mp::BaseItemsInfo &_read_resu
 ** @param _item_base_id 物品基础id
 ** @return 返回base_uuid(必定大于等于1)，若为0则表示获取失败
 */
-uint32_t *get_items_uuid_base(uint32_t _item_base_id, int64_t _amount)
+uint32_t *mp::get_items_uuid_base(uint32_t _item_base_id, int64_t _amount)
 {
     /* 若程序非运行状态，取消操作 */
     if (!mp::app_info.status_runtime)
@@ -81,8 +81,8 @@ uint32_t *get_items_uuid_base(uint32_t _item_base_id, int64_t _amount)
         uint32_t uuid_base = 0;
         query_stmt.column(0, uuid_base);
         if (uuid_base != 0 && mp::db_manage.exec_noquery(
-                                  "UPDATE db_play_data.items_uuid_base SET uuid_base=@uuid_base WHERE item_base_id=@item_base_id",
-                                  {"@item_base_id", "@uuid_base"}, _item_base_id, uuid_base + _amount))
+            "UPDATE db_play_data.items_uuid_base SET uuid_base=@uuid_base WHERE item_base_id=@item_base_id",
+            {"@item_base_id", "@uuid_base"}, _item_base_id, uuid_base + _amount))
         {
             base = uuid_base;
         }
@@ -128,7 +128,7 @@ uint32_t *get_items_uuid_base(uint32_t _item_base_id, int64_t _amount)
 ** @param _other 物品其它属性，从低到高位，第一位表示物品是否锁定，第二位表示该物品是否允许玩家解锁
 ** @return 是否成功更新玩家物品，成功返回mp::status_ok
 */
-mp::Status update_player_items(int64_t _player_id, int64_t _item_uuid, int32_t _amount, int32_t _position, int32_t _position_weight, int64_t _other)
+mp::Status mp::update_player_items(int64_t _player_id, int64_t _item_uuid, int32_t _amount, int32_t _position, int32_t _position_weight, int64_t _other)
 {
     bool result_flag = false;
 
@@ -211,7 +211,7 @@ mp::Status update_player_items(int64_t _player_id, int64_t _item_uuid, int32_t _
 ** @param _base_info 物品基础信息Json
 ** @return 成功返回mp::status_ok，失败返回错误代码
 */
-mp::Status regist_items(int64_t _item_uuid, uint32_t _item_base_id, int64_t _time_limit, json11::Json &_base_info)
+mp::Status mp::regist_items(int64_t _item_uuid, uint32_t _item_base_id, int64_t _time_limit, json11::Json &_base_info)
 {
     /* 若程序非运行状态，取消操作 */
     if (!mp::app_info.status_runtime)
@@ -234,6 +234,8 @@ mp::Status regist_items(int64_t _item_uuid, uint32_t _item_base_id, int64_t _tim
     }
 
     json11::Json obj_base = _base_info["base"];
+    json11::Json obj_attribute = _base_info["attribute"];
+
     if (obj_base.is_null())
     {
         return mp::status_json_is_null;
@@ -244,6 +246,35 @@ mp::Status regist_items(int64_t _item_uuid, uint32_t _item_base_id, int64_t _tim
             {"@item_uuid", "@item_base_id", "@time_limit", "@weight"},
             _item_uuid, _item_base_id, _time_limit, obj_base["weight"].int_value()))
     {
+        //物品属性登记
+        if(!obj_attribute.is_null())
+        {
+            mp::database::stmt exec_stmt = mp::db_manage.prepare("INSERT INTO db_play_data.items_attributes(item_uuid,attributes_name,attributes_value) VALUES(@item_uuid,@attributes_name,@attributes_value)");
+            if(!exec_stmt.open_success()) return mp::status_exec_error;
+
+            auto items = obj_attribute.object_items();
+            for(auto p = items.begin(); p != items.end(); ++p)
+            {
+                if(p->second.is_number())
+                {
+                    exec_stmt.bind({"@item_uuid","@attributes_name","@attributes_value"}, 
+                    _item_uuid, p->first, p->second.number_value());
+                }
+                else if (p->second.is_string())
+                {
+                    exec_stmt.bind({"@item_uuid","@attributes_name","@attributes_value"}, 
+                    _item_uuid, p->first, p->second.string_value());
+                }
+                else
+                {
+                    return mp::status_exec_error;
+                }
+
+                if(exec_stmt.step() != SQLITE_DONE) return mp::status_exec_error;
+                if(!exec_stmt.reset()) return mp::status_exec_error;
+            }
+        }
+
         return mp::status_ok;
     }
     else
